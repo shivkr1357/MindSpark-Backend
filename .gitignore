@@ -205,3 +205,6 @@ build/
 uploads/
 
 # Firebase
+firebase-adminsdk-*.json
+*firebase-adminsdk*.json
+projecttutorial-*.json
