@@ -203,3 +203,5 @@ build/
 
 # Uploads directory (if storing files locally)
 uploads/
+
+# Firebase
