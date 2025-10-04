@@ -168,7 +168,10 @@ export class MemeService {
   }
 
   // Increment meme engagement (likes, shares, views)
-  static async incrementEngagement(id: string, type: 'likes' | 'shares' | 'views') {
+  static async incrementEngagement(
+    id: string,
+    type: "likes" | "shares" | "views"
+  ) {
     try {
       if (!Types.ObjectId.isValid(id)) {
         throw new Error("Invalid meme ID");

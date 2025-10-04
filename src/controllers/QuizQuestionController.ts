@@ -20,7 +20,8 @@ export class QuizQuestionController {
     } catch (error) {
       res.status(500).json({
         success: false,
-        message: error instanceof Error ? error.message : "Internal server error",
+        message:
+          error instanceof Error ? error.message : "Internal server error",
       });
     }
   }
@@ -34,10 +35,14 @@ export class QuizQuestionController {
 
       res.status(200).json(result);
     } catch (error) {
-      const statusCode = error instanceof Error && error.message.includes("not found") ? 404 : 500;
+      const statusCode =
+        error instanceof Error && error.message.includes("not found")
+          ? 404
+          : 500;
       res.status(statusCode).json({
         success: false,
-        message: error instanceof Error ? error.message : "Internal server error",
+        message:
+          error instanceof Error ? error.message : "Internal server error",
       });
     }
   }
@@ -47,13 +52,16 @@ export class QuizQuestionController {
     try {
       const quizQuestionData = req.body;
 
-      const result = await QuizQuestionService.createQuizQuestion(quizQuestionData);
+      const result = await QuizQuestionService.createQuizQuestion(
+        quizQuestionData
+      );
 
       res.status(201).json(result);
     } catch (error) {
       res.status(500).json({
         success: false,
-        message: error instanceof Error ? error.message : "Internal server error",
+        message:
+          error instanceof Error ? error.message : "Internal server error",
       });
     }
   }
@@ -64,14 +72,21 @@ export class QuizQuestionController {
       const { id } = req.params;
       const updateData = req.body;
 
-      const result = await QuizQuestionService.updateQuizQuestion(id, updateData);
+      const result = await QuizQuestionService.updateQuizQuestion(
+        id,
+        updateData
+      );
 
       res.status(200).json(result);
     } catch (error) {
-      const statusCode = error instanceof Error && error.message.includes("not found") ? 404 : 500;
+      const statusCode =
+        error instanceof Error && error.message.includes("not found")
+          ? 404
+          : 500;
       res.status(statusCode).json({
         success: false,
-        message: error instanceof Error ? error.message : "Internal server error",
+        message:
+          error instanceof Error ? error.message : "Internal server error",
       });
     }
   }
@@ -85,10 +100,14 @@ export class QuizQuestionController {
 
       res.status(200).json(result);
     } catch (error) {
-      const statusCode = error instanceof Error && error.message.includes("not found") ? 404 : 500;
+      const statusCode =
+        error instanceof Error && error.message.includes("not found")
+          ? 404
+          : 500;
       res.status(statusCode).json({
         success: false,
-        message: error instanceof Error ? error.message : "Internal server error",
+        message:
+          error instanceof Error ? error.message : "Internal server error",
       });
     }
   }
@@ -99,13 +118,17 @@ export class QuizQuestionController {
       const { category } = req.params;
       const limit = parseInt(req.query.limit as string) || 10;
 
-      const result = await QuizQuestionService.getQuizQuestionsByCategory(category, limit);
+      const result = await QuizQuestionService.getQuizQuestionsByCategory(
+        category,
+        limit
+      );
 
       res.status(200).json(result);
     } catch (error) {
       res.status(500).json({
         success: false,
-        message: error instanceof Error ? error.message : "Internal server error",
+        message:
+          error instanceof Error ? error.message : "Internal server error",
       });
     }
   }
@@ -116,13 +139,17 @@ export class QuizQuestionController {
       const { difficulty } = req.params;
       const limit = parseInt(req.query.limit as string) || 10;
 
-      const result = await QuizQuestionService.getQuizQuestionsByDifficulty(difficulty, limit);
+      const result = await QuizQuestionService.getQuizQuestionsByDifficulty(
+        difficulty,
+        limit
+      );
 
       res.status(200).json(result);
     } catch (error) {
       res.status(500).json({
         success: false,
-        message: error instanceof Error ? error.message : "Internal server error",
+        message:
+          error instanceof Error ? error.message : "Internal server error",
       });
     }
   }

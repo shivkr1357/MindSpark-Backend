@@ -76,7 +76,10 @@ export class QuizQuestionService {
   }
 
   // Update a quiz question
-  static async updateQuizQuestion(id: string, updateData: Partial<IQuizQuestion>) {
+  static async updateQuizQuestion(
+    id: string,
+    updateData: Partial<IQuizQuestion>
+  ) {
     try {
       if (!Types.ObjectId.isValid(id)) {
         throw new Error("Invalid quiz question ID");
@@ -128,7 +131,10 @@ export class QuizQuestionService {
   }
 
   // Get quiz questions by category
-  static async getQuizQuestionsByCategory(category: string, limit: number = 10) {
+  static async getQuizQuestionsByCategory(
+    category: string,
+    limit: number = 10
+  ) {
     try {
       const quizQuestions = await QuizQuestion.find({
         category,
@@ -148,7 +154,10 @@ export class QuizQuestionService {
   }
 
   // Get quiz questions by difficulty
-  static async getQuizQuestionsByDifficulty(difficulty: string, limit: number = 10) {
+  static async getQuizQuestionsByDifficulty(
+    difficulty: string,
+    limit: number = 10
+  ) {
     try {
       const quizQuestions = await QuizQuestion.find({
         difficulty,

@@ -64,7 +64,9 @@ export class CodingQuestionService {
   }
 
   // Create a new coding question
-  static async createCodingQuestion(codingQuestionData: Partial<ICodingQuestion>) {
+  static async createCodingQuestion(
+    codingQuestionData: Partial<ICodingQuestion>
+  ) {
     try {
       const codingQuestion = new CodingQuestion(codingQuestionData);
       await codingQuestion.save();
@@ -79,7 +81,10 @@ export class CodingQuestionService {
   }
 
   // Update a coding question
-  static async updateCodingQuestion(id: string, updateData: Partial<ICodingQuestion>) {
+  static async updateCodingQuestion(
+    id: string,
+    updateData: Partial<ICodingQuestion>
+  ) {
     try {
       if (!Types.ObjectId.isValid(id)) {
         throw new Error("Invalid coding question ID");
@@ -131,7 +136,10 @@ export class CodingQuestionService {
   }
 
   // Get coding questions by difficulty
-  static async getCodingQuestionsByDifficulty(difficulty: string, limit: number = 10) {
+  static async getCodingQuestionsByDifficulty(
+    difficulty: string,
+    limit: number = 10
+  ) {
     try {
       const codingQuestions = await CodingQuestion.find({
         difficulty,
@@ -146,12 +154,17 @@ export class CodingQuestionService {
         count: codingQuestions.length,
       };
     } catch (error) {
-      throw new Error(`Failed to fetch coding questions by difficulty: ${error}`);
+      throw new Error(
+        `Failed to fetch coding questions by difficulty: ${error}`
+      );
     }
   }
 
   // Get coding questions by language
-  static async getCodingQuestionsByLanguage(language: string, limit: number = 10) {
+  static async getCodingQuestionsByLanguage(
+    language: string,
+    limit: number = 10
+  ) {
     try {
       const codingQuestions = await CodingQuestion.find({
         language,
@@ -171,7 +184,10 @@ export class CodingQuestionService {
   }
 
   // Get coding questions by category
-  static async getCodingQuestionsByCategory(category: string, limit: number = 10) {
+  static async getCodingQuestionsByCategory(
+    category: string,
+    limit: number = 10
+  ) {
     try {
       const codingQuestions = await CodingQuestion.find({
         category,
@@ -200,13 +216,15 @@ export class CodingQuestionService {
       const codingQuestion = await CodingQuestion.findOne({
         _id: id,
         isActive: true,
-      }).select('testCases');
+      }).select("testCases");
 
       if (!codingQuestion) {
         throw new Error("Coding question not found");
       }
 
-      const publicTestCases = codingQuestion.testCases.filter(testCase => testCase.isPublic);
+      const publicTestCases = codingQuestion.testCases.filter(
+        (testCase) => testCase.isPublic
+      );
 
       return {
         success: true,

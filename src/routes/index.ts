@@ -6,6 +6,12 @@ import funRouter from "./fun.js";
 import uploadRouter from "./upload.js";
 import usersRouter from "./users.js";
 import dashboardRouter from "./dashboard.js";
+import quizQuestionsRouter from "./quizQuestions.js";
+import puzzlesRouter from "./puzzles.js";
+import memesRouter from "./memes.js";
+import motivationsRouter from "./motivations.js";
+import codingQuestionsRouter from "./codingQuestions.js";
+import lessonsRouter from "./lessons.js";
 
 const router = Router();
 
@@ -27,5 +33,11 @@ router.use("/fun", funRouter);
 router.use("/upload", uploadRouter);
 router.use("/users", usersRouter);
 router.use("/dashboard", dashboardRouter);
+router.use("/quiz-questions", quizQuestionsRouter);
+router.use("/puzzles", puzzlesRouter);
+router.use("/memes", memesRouter);
+router.use("/motivations", motivationsRouter);
+router.use("/coding-questions", codingQuestionsRouter);
+router.use("/lessons", lessonsRouter);
 
 export default router;

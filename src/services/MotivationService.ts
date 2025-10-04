@@ -146,7 +146,9 @@ export class MotivationService {
         count: motivations.length,
       };
     } catch (error) {
-      throw new Error(`Failed to fetch featured motivational content: ${error}`);
+      throw new Error(
+        `Failed to fetch featured motivational content: ${error}`
+      );
     }
   }
 
@@ -166,7 +168,9 @@ export class MotivationService {
         count: motivations.length,
       };
     } catch (error) {
-      throw new Error(`Failed to fetch motivational content by category: ${error}`);
+      throw new Error(
+        `Failed to fetch motivational content by category: ${error}`
+      );
     }
   }
 
@@ -191,14 +195,19 @@ export class MotivationService {
   }
 
   // Increment engagement (likes, shares, views, bookmarks)
-  static async incrementEngagement(id: string, type: 'likes' | 'shares' | 'views' | 'bookmarks') {
+  static async incrementEngagement(
+    id: string,
+    type: "likes" | "shares" | "views" | "bookmarks"
+  ) {
     try {
       if (!Types.ObjectId.isValid(id)) {
         throw new Error("Invalid motivation ID");
       }
 
       const updateQuery = { $inc: { [type]: 1 } };
-      const motivation = await Motivation.findByIdAndUpdate(id, updateQuery, { new: true });
+      const motivation = await Motivation.findByIdAndUpdate(id, updateQuery, {
+        new: true,
+      });
 
       if (!motivation) {
         throw new Error("Motivational content not found");
