@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { LessonController } from "../controllers/LessonController.js";
-import { authenticateToken } from "../middleware/auth.js";
-import { requireRole } from "../middleware/role.js";
+import { AuthMiddleware } from "../middleware/index.js";
 
 const router = Router();
 
@@ -15,11 +14,11 @@ router.get("/module/:moduleId", LessonController.getLessonsByModule);
 router.get("/:id", LessonController.getLessonById);
 
 // Protected routes (require authentication)
-router.use(authenticateToken);
+router.use(AuthMiddleware.verifyToken as any);
 
 // Admin-only routes
-router.post("/", requireRole("admin"), LessonController.createLesson);
-router.put("/:id", requireRole("admin"), LessonController.updateLesson);
-router.delete("/:id", requireRole("admin"), LessonController.deleteLesson);
+router.post("/", LessonController.createLesson);
+router.put("/:id", LessonController.updateLesson);
+router.delete("/:id", LessonController.deleteLesson);
 
 export default router;

@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import { initializeFirebase } from "../config/firebase.js";
+// import { initializeFirebase } from "../config/firebase.js";
 import { connectDB } from "../config/db.js";
 import {
   Subject,
@@ -1790,7 +1790,7 @@ async function seedDatabase() {
     console.log("🌱 Starting database seeding...");
 
     // Initialize Firebase and connect to database
-    initializeFirebase();
+    // initializeFirebase(); // Skip Firebase initialization for seeding
     await connectDB();
 
     // Clear existing data

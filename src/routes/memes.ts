@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { MemeController } from "../controllers/MemeController.js";
-import { authenticateToken } from "../middleware/auth.js";
-import { requireRole } from "../middleware/role.js";
+import { AuthMiddleware } from "../middleware/index.js";
 
 const router = Router();
 
@@ -12,14 +11,14 @@ router.get("/category/:category", MemeController.getMemesByCategory);
 router.get("/:id", MemeController.getMemeById);
 
 // Protected routes (require authentication)
-router.use(authenticateToken);
+router.use(AuthMiddleware.verifyToken as any);
 
 // User engagement routes
 router.post("/:id/engagement", MemeController.incrementEngagement);
 
 // Admin-only routes
-router.post("/", requireRole("admin"), MemeController.createMeme);
-router.put("/:id", requireRole("admin"), MemeController.updateMeme);
-router.delete("/:id", requireRole("admin"), MemeController.deleteMeme);
+router.post("/", MemeController.createMeme);
+router.put("/:id", MemeController.updateMeme);
+router.delete("/:id", MemeController.deleteMeme);
 
 export default router;

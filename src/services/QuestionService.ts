@@ -12,7 +12,7 @@ export class QuestionService {
   public async createQuestion(
     subjectId: string,
     questionData: CreateQuestionRequest,
-    createdBy: string,
+    createdBy: string
   ): Promise<IInterviewQuestion> {
     try {
       const question = new InterviewQuestion({
@@ -34,7 +34,7 @@ export class QuestionService {
    */
   public async getQuestionsBySubject(
     subjectId: string,
-    query: GetQuestionsQuery = {},
+    query: GetQuestionsQuery = {}
   ): Promise<{ questions: IInterviewQuestion[]; total: number }> {
     try {
       const { difficulty, category, page = 1, limit = 10 } = query;
@@ -65,10 +65,12 @@ export class QuestionService {
    * Get question by ID
    */
   public async getQuestionById(
-    questionId: string,
+    questionId: string
   ): Promise<IInterviewQuestion | null> {
     try {
       const question = await InterviewQuestion.findById(questionId).lean();
+
+      console.log("question", question);
       return question;
     } catch (error) {
       console.error("Error getting question by ID:", error);
@@ -81,13 +83,13 @@ export class QuestionService {
    */
   public async updateQuestion(
     questionId: string,
-    updateData: Partial<CreateQuestionRequest>,
+    updateData: Partial<CreateQuestionRequest>
   ): Promise<IInterviewQuestion> {
     try {
       const question = await InterviewQuestion.findByIdAndUpdate(
         questionId,
         updateData,
-        { new: true, runValidators: true },
+        { new: true, runValidators: true }
       );
 
       if (!question) {
@@ -122,7 +124,7 @@ export class QuestionService {
   public async getRandomQuestions(
     subjectId: string,
     count: number = 10,
-    difficulty?: string,
+    difficulty?: string
   ): Promise<IInterviewQuestion[]> {
     try {
       const filter: Record<string, unknown> = { subjectId };
@@ -147,7 +149,7 @@ export class QuestionService {
     subjectId: string,
     category: string,
     page: number = 1,
-    limit: number = 10,
+    limit: number = 10
   ): Promise<{ questions: IInterviewQuestion[]; total: number }> {
     try {
       const skip = (page - 1) * limit;
@@ -175,7 +177,7 @@ export class QuestionService {
     subjectId: string,
     difficulty: string,
     page: number = 1,
-    limit: number = 10,
+    limit: number = 10
   ): Promise<{ questions: IInterviewQuestion[]; total: number }> {
     try {
       const skip = (page - 1) * limit;
@@ -201,7 +203,7 @@ export class QuestionService {
    */
   public async getAllQuestions(
     page: number = 1,
-    limit: number = 10,
+    limit: number = 10
   ): Promise<{ questions: IInterviewQuestion[]; total: number }> {
     try {
       const skip = (page - 1) * limit;
@@ -229,7 +231,7 @@ export class QuestionService {
     query: string,
     subjectId?: string,
     page: number = 1,
-    limit: number = 10,
+    limit: number = 10
   ): Promise<{ questions: IInterviewQuestion[]; total: number }> {
     try {
       const skip = (page - 1) * limit;
@@ -323,7 +325,7 @@ export class QuestionService {
   public async getQuestionsByUser(
     createdBy: string,
     page: number = 1,
-    limit: number = 10,
+    limit: number = 10
   ): Promise<{ questions: IInterviewQuestion[]; total: number }> {
     try {
       const skip = (page - 1) * limit;

@@ -18,15 +18,24 @@ export class UserService {
         email: firebaseUser.email,
       };
 
-      const user = await User.findOneAndUpdate(
-        { uid: firebaseUser.uid },
-        userData,
-        {
-          upsert: true,
-          new: true,
-          setDefaultsOnInsert: true,
-        },
-      );
+      // First try to find by uid, then by email if uid doesn't exist
+      let user = await User.findOne({ uid: firebaseUser.uid });
+
+      if (!user) {
+        // If no user found by uid, try to find by email
+        user = await User.findOne({ email: firebaseUser.email });
+      }
+
+      if (user) {
+        // Update existing user
+        user.uid = firebaseUser.uid;
+        user.name = firebaseUser.name || firebaseUser.display_name || user.name;
+        user.email = firebaseUser.email;
+        await user.save();
+      } else {
+        // Create new user
+        user = await User.create(userData);
+      }
 
       return user.toObject();
     } catch (error) {
@@ -66,7 +75,7 @@ export class UserService {
    */
   public async updateUserProfile(
     uid: string,
-    updateData: Partial<IUser>,
+    updateData: Partial<IUser>
   ): Promise<IUser> {
     try {
       const user = await User.findOneAndUpdate({ uid }, updateData, {
@@ -90,13 +99,13 @@ export class UserService {
    */
   public async updateUserStats(
     uid: string,
-    statsUpdate: Partial<IUser["stats"]>,
+    statsUpdate: Partial<IUser["stats"]>
   ): Promise<IUser> {
     try {
       const user = await User.findOneAndUpdate(
         { uid },
         { $inc: statsUpdate },
-        { new: true },
+        { new: true }
       );
 
       if (!user) {
@@ -141,7 +150,7 @@ export class UserService {
    */
   public async getAllUsers(
     page: number = 1,
-    limit: number = 10,
+    limit: number = 10
   ): Promise<{ users: IUser[]; total: number }> {
     try {
       const skip = (page - 1) * limit;
@@ -178,13 +187,13 @@ export class UserService {
    */
   public async updateUserPreferences(
     uid: string,
-    preferences: Partial<IUser["preferences"]>,
+    preferences: Partial<IUser["preferences"]>
   ): Promise<IUser> {
     try {
       const user = await User.findOneAndUpdate(
         { uid },
         { preferences },
-        { new: true, runValidators: true },
+        { new: true, runValidators: true }
       );
 
       if (!user) {

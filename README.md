@@ -36,7 +36,7 @@ A comprehensive Node.js + TypeScript backend API for an educational platform wit
 3. **Environment Setup**
 
    ```bash
-   cp env.example .env
+   cp .env.example .env
    ```
 
    Fill in your environment variables in `.env`:
@@ -50,8 +50,16 @@ A comprehensive Node.js + TypeScript backend API for an educational platform wit
    MONGODB_URI=mongodb://localhost:27017/mindspark
 
    # Firebase Configuration
-   # Note: Firebase is configured using the service account JSON file in the root directory
-   # File: projecttutorial-5f94d-firebase-adminsdk-r949n-769a4e752f.json
+   FIREBASE_PROJECT_ID=your-project-id
+   FIREBASE_PRIVATE_KEY_ID=your-private-key-id
+   FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYOUR_PRIVATE_KEY_HERE\n-----END PRIVATE KEY-----\n"
+   FIREBASE_CLIENT_EMAIL=your-service-account@your-project.iam.gserviceaccount.com
+   FIREBASE_CLIENT_ID=your-client-id
+   FIREBASE_AUTH_URI=https://accounts.google.com/o/oauth2/auth
+   FIREBASE_TOKEN_URI=https://oauth2.googleapis.com/token
+   FIREBASE_AUTH_PROVIDER_X509_CERT_URL=https://www.googleapis.com/oauth2/v1/certs
+   FIREBASE_CLIENT_X509_CERT_URL=https://www.googleapis.com/robot/v1/metadata/x509/your-service-account%40your-project.iam.gserviceaccount.com
+   FIREBASE_UNIVERSE_DOMAIN=googleapis.com
 
    # Cloudflare R2 Configuration
    R2_ACCESS_KEY_ID=your-r2-access-key
@@ -67,6 +75,8 @@ A comprehensive Node.js + TypeScript backend API for an educational platform wit
    # CORS
    CORS_ORIGIN=http://localhost:3000,http://localhost:3001
    ```
+
+   **Note**: Firebase credentials are now configured using environment variables instead of JSON files for better security.
 
 4. **Seed the database with sample data**
 

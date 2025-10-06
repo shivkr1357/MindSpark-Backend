@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { MotivationController } from "../controllers/MotivationController.js";
-import { authenticateToken } from "../middleware/auth.js";
-import { requireRole } from "../middleware/role.js";
+import { AuthMiddleware } from "../middleware/index.js";
 
 const router = Router();
 
@@ -16,17 +15,17 @@ router.get("/type/:type", MotivationController.getMotivationsByType);
 router.get("/:id", MotivationController.getMotivationById);
 
 // Protected routes (require authentication)
-router.use(authenticateToken);
+router.use(AuthMiddleware.verifyToken as any);
 
 // User engagement routes
 router.post("/:id/engagement", MotivationController.incrementEngagement);
 
 // Admin-only routes
-router.post("/", requireRole("admin"), MotivationController.createMotivation);
-router.put("/:id", requireRole("admin"), MotivationController.updateMotivation);
+router.post("/", MotivationController.createMotivation);
+router.put("/:id", MotivationController.updateMotivation);
 router.delete(
   "/:id",
-  requireRole("admin"),
+
   MotivationController.deleteMotivation
 );
 

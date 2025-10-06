@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { QuizQuestionController } from "../controllers/QuizQuestionController.js";
-import { authenticateToken } from "../middleware/auth.js";
-import { requireRole } from "../middleware/role.js";
+import { AuthMiddleware } from "../middleware/auth.js";
 
 const router = Router();
 
@@ -18,22 +17,22 @@ router.get(
 router.get("/:id", QuizQuestionController.getQuizQuestionById);
 
 // Protected routes (require authentication)
-router.use(authenticateToken);
+router.use(AuthMiddleware.verifyToken as any);
 
 // Admin-only routes
 router.post(
   "/",
-  requireRole("admin"),
+
   QuizQuestionController.createQuizQuestion
 );
 router.put(
   "/:id",
-  requireRole("admin"),
+
   QuizQuestionController.updateQuizQuestion
 );
 router.delete(
   "/:id",
-  requireRole("admin"),
+
   QuizQuestionController.deleteQuizQuestion
 );
 

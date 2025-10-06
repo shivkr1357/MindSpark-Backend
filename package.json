@@ -9,7 +9,12 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "test": "jest",
-    "seed": "tsx src/scripts/seedDatabase.ts"
+    "seed": "tsx src/scripts/seedAll.ts",
+    "seed:core": "tsx src/scripts/seedCore.ts",
+    "seed:content": "tsx src/scripts/seedContent.ts",
+    "seed:nested": "tsx src/scripts/seedNested.ts",
+    "seed:dashboard": "tsx src/scripts/seedDashboard.ts",
+    "seed:all": "tsx src/scripts/seedAll.ts"
   },
   "keywords": [
     "express",

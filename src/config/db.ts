@@ -6,13 +6,11 @@ dotenv.config();
 export const connectDB = async (): Promise<void> => {
   try {
     // Use MONGODB_URI if available, otherwise construct from individual components
-    const mongoURI =
-      process.env.MONGODB_URI ||
-      `mongodb+srv://${process.env.MONGODB_USER}:${
-        process.env.MONGODB_PASSWORD
-      }@cluster0.ru9s9.mongodb.net/${
-        process.env.MONGODB_DATABASE || "mindspark"
-      }?retryWrites=true&w=majority&appName=Cluster0`;
+    const mongoURI = `mongodb+srv://${process.env.MONGODB_USER}:${
+      process.env.MONGODB_PASSWORD
+    }@cluster0.ru9s9.mongodb.net/${
+      process.env.MONGODB_DATABASE || "mindspark"
+    }?retryWrites=true&w=majority&appName=Cluster0`;
 
     await mongoose.connect(mongoURI);
 

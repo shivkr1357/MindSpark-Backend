@@ -143,18 +143,22 @@ export class DashboardController {
       });
 
       if (!progressStats) {
-        // Create default progress stats if none exist
-        progressStats = await ProgressStats.create({
-          userId: userId || "default",
-          lessonsCompleted: 0,
-          questionsAnswered: 0,
-          accuracy: 0,
-          totalStudyTime: 0,
-          streak: 0,
-          level: 1,
-          experience: 0,
-          createdBy: userId || "system",
-        });
+        // Create default progress stats if none exist (use upsert to handle duplicates)
+        progressStats = await ProgressStats.findOneAndUpdate(
+          { userId: userId || "default" },
+          {
+            userId: userId || "default",
+            lessonsCompleted: 0,
+            questionsAnswered: 0,
+            accuracy: 0,
+            totalStudyTime: 0,
+            streak: 0,
+            level: 1,
+            experience: 0,
+            createdBy: userId || "system",
+          },
+          { upsert: true, new: true, setDefaultsOnInsert: true }
+        );
       }
 
       res.status(200).json({

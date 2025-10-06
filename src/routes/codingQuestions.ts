@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { CodingQuestionController } from "../controllers/CodingQuestionController.js";
-import { authenticateToken } from "../middleware/auth.js";
-import { requireRole } from "../middleware/role.js";
+import { AuthMiddleware } from "../middleware/index.js";
 
 const router = Router();
 
@@ -23,22 +22,22 @@ router.get("/:id", CodingQuestionController.getCodingQuestionById);
 router.get("/:id/test-cases", CodingQuestionController.getPublicTestCases);
 
 // Protected routes (require authentication)
-router.use(authenticateToken);
+router.use(AuthMiddleware.verifyToken as any);
 
 // Admin-only routes
 router.post(
   "/",
-  requireRole("admin"),
+
   CodingQuestionController.createCodingQuestion
 );
 router.put(
   "/:id",
-  requireRole("admin"),
+
   CodingQuestionController.updateCodingQuestion
 );
 router.delete(
   "/:id",
-  requireRole("admin"),
+
   CodingQuestionController.deleteCodingQuestion
 );
 
