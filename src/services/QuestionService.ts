@@ -43,10 +43,12 @@ export class QuestionService {
       // Build filter
       const filter: Record<string, unknown> = { subjectId };
       if (difficulty) filter.difficulty = difficulty;
-      if (category) filter.category = category;
+      if (category) filter.categoryId = category; // category query param now maps to categoryId
 
       const [questions, total] = await Promise.all([
         InterviewQuestion.find(filter)
+          .populate("categoryId", "name slug icon color")
+          .populate("subjectId", "title")
           .sort({ createdAt: -1 })
           .skip(skip)
           .limit(limit)
@@ -68,7 +70,10 @@ export class QuestionService {
     questionId: string
   ): Promise<IInterviewQuestion | null> {
     try {
-      const question = await InterviewQuestion.findById(questionId).lean();
+      const question = await InterviewQuestion.findById(questionId)
+        .populate("categoryId", "name slug icon color")
+        .populate("subjectId", "title")
+        .lean();
 
       console.log("question", question);
       return question;
@@ -86,15 +91,23 @@ export class QuestionService {
     updateData: Partial<CreateQuestionRequest>
   ): Promise<IInterviewQuestion> {
     try {
-      const question = await InterviewQuestion.findByIdAndUpdate(
-        questionId,
-        updateData,
-        { new: true, runValidators: true }
-      );
+      // Fetch the question first
+      const question = await InterviewQuestion.findById(questionId);
 
       if (!question) {
         throw new Error("Question not found");
       }
+
+      // Update fields
+      Object.assign(question, updateData);
+
+      // Remove old category field if it exists (migration from string to categoryId)
+      if ("category" in question && !updateData.categoryId) {
+        question.set("category", undefined);
+      }
+
+      // Save with validation
+      await question.save();
 
       return question.toObject();
     } catch (error) {
@@ -147,7 +160,7 @@ export class QuestionService {
    */
   public async getQuestionsByCategory(
     subjectId: string,
-    category: string,
+    categoryId: string,
     page: number = 1,
     limit: number = 10
   ): Promise<{ questions: IInterviewQuestion[]; total: number }> {
@@ -155,12 +168,14 @@ export class QuestionService {
       const skip = (page - 1) * limit;
 
       const [questions, total] = await Promise.all([
-        InterviewQuestion.find({ subjectId, category })
+        InterviewQuestion.find({ subjectId, categoryId })
+          .populate("categoryId", "name slug icon color")
+          .populate("subjectId", "title")
           .sort({ createdAt: -1 })
           .skip(skip)
           .limit(limit)
           .lean(),
-        InterviewQuestion.countDocuments({ subjectId, category }),
+        InterviewQuestion.countDocuments({ subjectId, categoryId }),
       ]);
 
       return { questions, total };
@@ -184,6 +199,8 @@ export class QuestionService {
 
       const [questions, total] = await Promise.all([
         InterviewQuestion.find({ subjectId, difficulty })
+          .populate("categoryId", "name slug icon color")
+          .populate("subjectId", "title")
           .sort({ createdAt: -1 })
           .skip(skip)
           .limit(limit)
@@ -210,6 +227,8 @@ export class QuestionService {
 
       const [questions, total] = await Promise.all([
         InterviewQuestion.find()
+          .populate("categoryId", "name slug icon color")
+          .populate("subjectId", "title")
           .sort({ createdAt: -1 })
           .skip(skip)
           .limit(limit)
@@ -240,7 +259,6 @@ export class QuestionService {
         $or: [
           { question: { $regex: query, $options: "i" } },
           { explanation: { $regex: query, $options: "i" } },
-          { category: { $regex: query, $options: "i" } },
         ],
       };
 
@@ -250,6 +268,8 @@ export class QuestionService {
 
       const [questions, total] = await Promise.all([
         InterviewQuestion.find(searchFilter)
+          .populate("categoryId", "name slug icon color")
+          .populate("subjectId", "title")
           .sort({ createdAt: -1 })
           .skip(skip)
           .limit(limit)

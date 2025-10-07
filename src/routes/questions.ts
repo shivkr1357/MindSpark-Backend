@@ -10,7 +10,7 @@ const router = Router();
 const questionController = new QuestionController();
 
 // Apply authentication middleware to all routes (disabled for testing)
-// router.use(AuthMiddleware.verifyToken as any);
+router.use(AuthMiddleware.verifyToken as any);
 
 // Apply validation middleware
 router.post(

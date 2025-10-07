@@ -8,7 +8,7 @@ export class ValidationMiddleware {
   public static handleValidationErrors(
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ): void {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -20,6 +20,102 @@ export class ValidationMiddleware {
       return;
     }
     next();
+  }
+
+  /**
+   * Validate category creation
+   */
+  public static validateCreateCategory() {
+    return [
+      body("name")
+        .trim()
+        .notEmpty()
+        .withMessage("Name is required")
+        .isLength({ max: 100 })
+        .withMessage("Name must be less than 100 characters"),
+      body("slug")
+        .optional()
+        .trim()
+        .isLength({ max: 100 })
+        .withMessage("Slug must be less than 100 characters")
+        .matches(/^[a-z0-9-]+$/)
+        .withMessage(
+          "Slug can only contain lowercase letters, numbers, and hyphens"
+        ),
+      body("description")
+        .trim()
+        .notEmpty()
+        .withMessage("Description is required")
+        .isLength({ max: 500 })
+        .withMessage("Description must be less than 500 characters"),
+      body("icon").optional().isString().trim(),
+      body("color")
+        .optional()
+        .matches(/^#[0-9A-F]{6}$/i)
+        .withMessage("Color must be a valid hex color code"),
+      body("order")
+        .optional()
+        .isInt({ min: 0 })
+        .withMessage("Order must be a non-negative integer"),
+      body("isActive")
+        .optional()
+        .isBoolean()
+        .withMessage("isActive must be a boolean"),
+      body("parentCategoryId")
+        .optional()
+        .custom((value) => value === null || typeof value === "string")
+        .withMessage("parentCategoryId must be a string or null"),
+      ValidationMiddleware.handleValidationErrors,
+    ];
+  }
+
+  /**
+   * Validate category update
+   */
+  public static validateUpdateCategory() {
+    return [
+      body("name")
+        .optional()
+        .trim()
+        .notEmpty()
+        .withMessage("Name cannot be empty")
+        .isLength({ max: 100 })
+        .withMessage("Name must be less than 100 characters"),
+      body("slug")
+        .optional()
+        .trim()
+        .isLength({ max: 100 })
+        .withMessage("Slug must be less than 100 characters")
+        .matches(/^[a-z0-9-]+$/)
+        .withMessage(
+          "Slug can only contain lowercase letters, numbers, and hyphens"
+        ),
+      body("description")
+        .optional()
+        .trim()
+        .notEmpty()
+        .withMessage("Description cannot be empty")
+        .isLength({ max: 500 })
+        .withMessage("Description must be less than 500 characters"),
+      body("icon").optional().isString().trim(),
+      body("color")
+        .optional()
+        .matches(/^#[0-9A-F]{6}$/i)
+        .withMessage("Color must be a valid hex color code"),
+      body("order")
+        .optional()
+        .isInt({ min: 0 })
+        .withMessage("Order must be a non-negative integer"),
+      body("isActive")
+        .optional()
+        .isBoolean()
+        .withMessage("isActive must be a boolean"),
+      body("parentCategoryId")
+        .optional()
+        .custom((value) => value === null || typeof value === "string")
+        .withMessage("parentCategoryId must be a string or null"),
+      ValidationMiddleware.handleValidationErrors,
+    ];
   }
 
   /**
@@ -37,8 +133,12 @@ export class ValidationMiddleware {
         .trim()
         .notEmpty()
         .withMessage("Description is required")
-        .isLength({ max: 500 })
+        .isLength({ max: 5000 })
         .withMessage("Description must be less than 500 characters"),
+      body("categoryId")
+        .optional()
+        .isString()
+        .withMessage("categoryId must be a string"),
       body("difficulty")
         .isIn([
           "Easy",
@@ -151,11 +251,10 @@ export class ValidationMiddleware {
         .withMessage("Explanation is required")
         .isLength({ max: 1000 })
         .withMessage("Explanation must be less than 1000 characters"),
-      body("category")
+      body("categoryId")
         .optional()
-        .trim()
-        .isLength({ max: 50 })
-        .withMessage("Category must be less than 50 characters"),
+        .isString()
+        .withMessage("categoryId must be a string"),
       ValidationMiddleware.handleValidationErrors,
     ];
   }

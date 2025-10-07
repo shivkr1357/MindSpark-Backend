@@ -33,6 +33,10 @@ const funContentSchema = new Schema<IFunContentDocument>(
       ref: "Subject",
       default: null,
     },
+    categoryId: {
+      type: String,
+      ref: "Category",
+    },
     difficulty: {
       type: String,
       enum: [
@@ -60,6 +64,7 @@ const funContentSchema = new Schema<IFunContentDocument>(
 // Indexes for better query performance
 funContentSchema.index({ type: 1 });
 funContentSchema.index({ subjectId: 1 });
+funContentSchema.index({ categoryId: 1 });
 funContentSchema.index({ difficulty: 1 });
 // funContentSchema.index({ title: "text", content: "text" });
 funContentSchema.index({ createdBy: 1 });
@@ -68,6 +73,7 @@ funContentSchema.index({ createdAt: -1 });
 // Compound indexes for efficient filtering
 funContentSchema.index({ type: 1, subjectId: 1 });
 funContentSchema.index({ type: 1, difficulty: 1 });
+funContentSchema.index({ type: 1, categoryId: 1 });
 funContentSchema.index({ subjectId: 1, difficulty: 1 });
 
 // Virtual for content type display name

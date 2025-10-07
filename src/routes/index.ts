@@ -1,4 +1,5 @@
 import { Router } from "express";
+import categoriesRouter from "./categories.js";
 import subjectsRouter from "./subjects.js";
 import syllabusRouter from "./syllabus.js";
 import questionsRouter from "./questions.js";
@@ -12,6 +13,7 @@ import memesRouter from "./memes.js";
 import motivationsRouter from "./motivations.js";
 import codingQuestionsRouter from "./codingQuestions.js";
 import lessonsRouter from "./lessons.js";
+import userProgressRouter from "./userProgress.js";
 
 const router = Router();
 
@@ -26,6 +28,7 @@ router.get("/health", (req, res) => {
 });
 
 // API routes
+router.use("/categories", categoriesRouter);
 router.use("/subjects", subjectsRouter);
 router.use("/syllabus", syllabusRouter);
 router.use("/questions", questionsRouter);
@@ -39,5 +42,6 @@ router.use("/memes", memesRouter);
 router.use("/motivations", motivationsRouter);
 router.use("/coding-questions", codingQuestionsRouter);
 router.use("/lessons", lessonsRouter);
+router.use("/user-progress", userProgressRouter);
 
 export default router;

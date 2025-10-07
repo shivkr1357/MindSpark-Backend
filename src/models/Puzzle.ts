@@ -12,7 +12,7 @@ export interface IPuzzle extends Document {
     | "Intermediate"
     | "Advanced"
     | "Expert";
-  category: string;
+  categoryId?: string; // Reference to Category
   puzzleData: IPuzzleData;
   solution: string;
   hints: string[];
@@ -106,11 +106,9 @@ const puzzleSchema = new Schema<IPuzzle>(
       ],
       required: true,
     },
-    category: {
+    categoryId: {
       type: String,
-      required: true,
-      trim: true,
-      maxlength: 100,
+      ref: "Category",
     },
     puzzleData: puzzleDataSchema,
     solution: {
@@ -163,7 +161,7 @@ const puzzleSchema = new Schema<IPuzzle>(
 // Indexes for better query performance
 puzzleSchema.index({ type: 1 });
 puzzleSchema.index({ difficulty: 1 });
-puzzleSchema.index({ category: 1 });
+puzzleSchema.index({ categoryId: 1 });
 puzzleSchema.index({ subjectId: 1 });
 puzzleSchema.index({ funContentId: 1 });
 puzzleSchema.index({ isActive: 1 });
@@ -172,7 +170,7 @@ puzzleSchema.index({ createdAt: -1 });
 
 // Compound indexes
 puzzleSchema.index({ type: 1, difficulty: 1 });
-puzzleSchema.index({ category: 1, type: 1 });
+puzzleSchema.index({ categoryId: 1, type: 1 });
 
 // Virtual for hint count
 puzzleSchema.virtual("hintCount").get(function (this: IPuzzle) {

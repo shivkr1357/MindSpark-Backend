@@ -14,8 +14,9 @@ export interface IQuizQuestion extends Document {
     | "Intermediate"
     | "Advanced"
     | "Expert";
-  category: string;
+  categoryId?: string; // Reference to Category
   subjectId?: string;
+  lessonId?: string; // Reference to Lesson
   funContentId?: string; // Reference to FunContent
   isActive: boolean;
   createdBy: string;
@@ -123,15 +124,17 @@ const quizQuestionSchema = new Schema<IQuizQuestion>(
       ],
       required: true,
     },
-    category: {
+    categoryId: {
       type: String,
-      required: true,
-      trim: true,
-      maxlength: 100,
+      ref: "Category",
     },
     subjectId: {
       type: String,
       ref: "Subject",
+    },
+    lessonId: {
+      type: String,
+      ref: "Lesson",
     },
     funContentId: {
       type: String,
@@ -153,17 +156,19 @@ const quizQuestionSchema = new Schema<IQuizQuestion>(
 );
 
 // Indexes for better query performance
-quizQuestionSchema.index({ category: 1 });
+quizQuestionSchema.index({ categoryId: 1 });
 quizQuestionSchema.index({ difficulty: 1 });
 quizQuestionSchema.index({ subjectId: 1 });
+quizQuestionSchema.index({ lessonId: 1 });
 quizQuestionSchema.index({ funContentId: 1 });
 quizQuestionSchema.index({ isActive: 1 });
 quizQuestionSchema.index({ createdBy: 1 });
 quizQuestionSchema.index({ createdAt: -1 });
 
 // Compound indexes
-quizQuestionSchema.index({ category: 1, difficulty: 1 });
-quizQuestionSchema.index({ subjectId: 1, category: 1 });
+quizQuestionSchema.index({ categoryId: 1, difficulty: 1 });
+quizQuestionSchema.index({ subjectId: 1, categoryId: 1 });
+quizQuestionSchema.index({ lessonId: 1, difficulty: 1 });
 
 // Virtual for total points
 quizQuestionSchema.virtual("totalPoints").get(function (this: IQuizQuestion) {

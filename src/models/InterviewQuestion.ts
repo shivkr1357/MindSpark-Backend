@@ -3,7 +3,9 @@ import { IInterviewQuestion } from "../types/index.js";
 
 export interface IInterviewQuestionDocument
   extends IInterviewQuestion,
-    Document {}
+    Document {
+  _id: string;
+}
 
 const interviewQuestionSchema = new Schema<IInterviewQuestionDocument>(
   {
@@ -58,10 +60,13 @@ const interviewQuestionSchema = new Schema<IInterviewQuestionDocument>(
       trim: true,
       maxlength: 1000,
     },
-    category: {
+    categoryId: {
       type: String,
-      trim: true,
-      maxlength: 50,
+      ref: "Category",
+    },
+    lessonId: {
+      type: String,
+      ref: "Lesson",
     },
     createdBy: {
       type: String,
@@ -77,14 +82,16 @@ const interviewQuestionSchema = new Schema<IInterviewQuestionDocument>(
 // Indexes for better query performance
 interviewQuestionSchema.index({ subjectId: 1 });
 interviewQuestionSchema.index({ difficulty: 1 });
-interviewQuestionSchema.index({ category: 1 });
+interviewQuestionSchema.index({ categoryId: 1 });
+interviewQuestionSchema.index({ lessonId: 1 });
 // interviewQuestionSchema.index({ question: "text", explanation: "text" });
 interviewQuestionSchema.index({ createdBy: 1 });
 interviewQuestionSchema.index({ createdAt: -1 });
 
 // Compound index for efficient filtering
 interviewQuestionSchema.index({ subjectId: 1, difficulty: 1 });
-interviewQuestionSchema.index({ subjectId: 1, category: 1 });
+interviewQuestionSchema.index({ subjectId: 1, categoryId: 1 });
+interviewQuestionSchema.index({ lessonId: 1, difficulty: 1 });
 
 // Virtual for correct answer text
 interviewQuestionSchema.virtual("correctAnswerText").get(function () {

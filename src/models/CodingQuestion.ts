@@ -12,7 +12,7 @@ export interface ICodingQuestion extends Document {
     | "Intermediate"
     | "Advanced"
     | "Expert";
-  category: string;
+  categoryId?: string; // Reference to Category
   language: string; // programming language
   tags: string[];
   constraints: string[];
@@ -24,6 +24,7 @@ export interface ICodingQuestion extends Document {
   memoryLimit?: number; // in MB
   points: number;
   subjectId?: string;
+  lessonId?: string; // Reference to Lesson
   interviewQuestionId?: string; // Reference to InterviewQuestion
   isActive: boolean;
   createdBy: string;
@@ -111,11 +112,9 @@ const codingQuestionSchema = new Schema<ICodingQuestion>(
       ],
       required: true,
     },
-    category: {
+    categoryId: {
       type: String,
-      required: true,
-      trim: true,
-      maxlength: 100,
+      ref: "Category",
     },
     language: {
       type: String,
@@ -172,6 +171,10 @@ const codingQuestionSchema = new Schema<ICodingQuestion>(
       type: String,
       ref: "Subject",
     },
+    lessonId: {
+      type: String,
+      ref: "Lesson",
+    },
     interviewQuestionId: {
       type: String,
       ref: "InterviewQuestion",
@@ -193,10 +196,11 @@ const codingQuestionSchema = new Schema<ICodingQuestion>(
 
 // Indexes for better query performance
 codingQuestionSchema.index({ difficulty: 1 });
-codingQuestionSchema.index({ category: 1 });
+codingQuestionSchema.index({ categoryId: 1 });
 codingQuestionSchema.index({ language: 1 });
 codingQuestionSchema.index({ tags: 1 });
 codingQuestionSchema.index({ subjectId: 1 });
+codingQuestionSchema.index({ lessonId: 1 });
 codingQuestionSchema.index({ interviewQuestionId: 1 });
 codingQuestionSchema.index({ isActive: 1 });
 codingQuestionSchema.index({ createdBy: 1 });
@@ -211,7 +215,7 @@ codingQuestionSchema.index({ createdAt: -1 });
 // });
 
 // Compound indexes
-codingQuestionSchema.index({ difficulty: 1, category: 1 });
+codingQuestionSchema.index({ difficulty: 1, categoryId: 1 });
 codingQuestionSchema.index({ language: 1, difficulty: 1 });
 
 // Virtual for public test cases count

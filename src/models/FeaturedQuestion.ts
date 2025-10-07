@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from "mongoose";
 
 export interface IFeaturedQuestion extends Document {
   title: string;
-  category: string;
+  categoryId?: string;
   difficulty:
     | "Easy"
     | "Medium"
@@ -29,11 +29,9 @@ const featuredQuestionSchema = new Schema<IFeaturedQuestion>(
       trim: true,
       maxlength: 500,
     },
-    category: {
+    categoryId: {
       type: String,
-      required: true,
-      trim: true,
-      maxlength: 100,
+      ref: "Category",
     },
     difficulty: {
       type: String,
@@ -82,9 +80,10 @@ const featuredQuestionSchema = new Schema<IFeaturedQuestion>(
 );
 
 // Indexes for better query performance
-featuredQuestionSchema.index({ category: 1 });
+featuredQuestionSchema.index({ categoryId: 1 });
 featuredQuestionSchema.index({ difficulty: 1 });
 featuredQuestionSchema.index({ subjectId: 1 });
+featuredQuestionSchema.index({ questionId: 1 });
 featuredQuestionSchema.index({ isActive: 1 });
 featuredQuestionSchema.index({ views: -1 });
 featuredQuestionSchema.index({ answered: 1 });

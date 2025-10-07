@@ -7,7 +7,7 @@ export class SubjectService {
    */
   public async createSubject(
     subjectData: CreateSubjectRequest,
-    createdBy: string,
+    createdBy: string
   ): Promise<ISubject> {
     try {
       const subject = new Subject({
@@ -28,13 +28,18 @@ export class SubjectService {
    */
   public async getAllSubjects(
     page: number = 1,
-    limit: number = 10,
+    limit: number = 10
   ): Promise<{ subjects: ISubject[]; total: number }> {
     try {
       const skip = (page - 1) * limit;
 
       const [subjects, total] = await Promise.all([
-        Subject.find().sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+        Subject.find()
+          .populate("categoryId", "name slug icon color")
+          .sort({ createdAt: -1 })
+          .skip(skip)
+          .limit(limit)
+          .lean(),
         Subject.countDocuments(),
       ]);
 
@@ -50,7 +55,9 @@ export class SubjectService {
    */
   public async getSubjectById(subjectId: string): Promise<ISubject | null> {
     try {
-      const subject = await Subject.findById(subjectId).lean();
+      const subject = await Subject.findById(subjectId)
+        .populate("categoryId", "name slug icon color")
+        .lean();
       return subject;
     } catch (error) {
       console.error("Error getting subject by ID:", error);
@@ -63,7 +70,7 @@ export class SubjectService {
    */
   public async updateSubject(
     subjectId: string,
-    updateData: Partial<CreateSubjectRequest>,
+    updateData: Partial<CreateSubjectRequest>
   ): Promise<ISubject> {
     try {
       const subject = await Subject.findByIdAndUpdate(subjectId, updateData, {
@@ -103,7 +110,7 @@ export class SubjectService {
   public async searchSubjects(
     query: string,
     page: number = 1,
-    limit: number = 10,
+    limit: number = 10
   ): Promise<{ subjects: ISubject[]; total: number }> {
     try {
       const skip = (page - 1) * limit;
@@ -117,6 +124,7 @@ export class SubjectService {
 
       const [subjects, total] = await Promise.all([
         Subject.find(searchQuery)
+          .populate("categoryId", "name slug icon color")
           .sort({ createdAt: -1 })
           .skip(skip)
           .limit(limit)
@@ -137,13 +145,14 @@ export class SubjectService {
   public async getSubjectsByDifficulty(
     difficulty: string,
     page: number = 1,
-    limit: number = 10,
+    limit: number = 10
   ): Promise<{ subjects: ISubject[]; total: number }> {
     try {
       const skip = (page - 1) * limit;
 
       const [subjects, total] = await Promise.all([
         Subject.find({ difficulty })
+          .populate("categoryId", "name slug icon color")
           .sort({ createdAt: -1 })
           .skip(skip)
           .limit(limit)
@@ -164,7 +173,7 @@ export class SubjectService {
   public async getSubjectsByUser(
     createdBy: string,
     page: number = 1,
-    limit: number = 10,
+    limit: number = 10
   ): Promise<{ subjects: ISubject[]; total: number }> {
     try {
       const skip = (page - 1) * limit;

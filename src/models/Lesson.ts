@@ -13,7 +13,7 @@ export interface ILesson extends Document {
     | "Intermediate"
     | "Advanced"
     | "Expert";
-  category: string;
+  categoryId?: string; // Reference to Category
   tags: string[];
   objectives: string[];
   prerequisites: string[];
@@ -198,11 +198,9 @@ const lessonSchema = new Schema<ILesson>(
       ],
       required: true,
     },
-    category: {
+    categoryId: {
       type: String,
-      required: true,
-      trim: true,
-      maxlength: 100,
+      ref: "Category",
     },
     tags: [
       {
@@ -270,7 +268,7 @@ const lessonSchema = new Schema<ILesson>(
 
 // Indexes for better query performance
 lessonSchema.index({ difficulty: 1 });
-lessonSchema.index({ category: 1 });
+lessonSchema.index({ categoryId: 1 });
 lessonSchema.index({ tags: 1 });
 lessonSchema.index({ syllabusId: 1 });
 lessonSchema.index({ subjectId: 1 });

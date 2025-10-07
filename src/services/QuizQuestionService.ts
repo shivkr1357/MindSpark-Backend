@@ -22,6 +22,9 @@ export class QuizQuestionService {
       }
 
       const quizQuestions = await QuizQuestion.find(query)
+        .populate("categoryId", "name slug icon color")
+        .populate("subjectId", "title description icon color")
+        .populate("lessonId", "title description")
         .sort({ createdAt: -1 })
         .limit(filters.limit || 50);
 
@@ -45,7 +48,10 @@ export class QuizQuestionService {
       const quizQuestion = await QuizQuestion.findOne({
         _id: id,
         isActive: true,
-      });
+      })
+        .populate("categoryId", "name slug icon color")
+        .populate("subjectId", "title description icon color")
+        .populate("lessonId", "title description");
 
       if (!quizQuestion) {
         throw new Error("Quiz question not found");
@@ -140,6 +146,9 @@ export class QuizQuestionService {
         category,
         isActive: true,
       })
+        .populate("categoryId", "name slug icon color")
+        .populate("subjectId", "title description icon color")
+        .populate("lessonId", "title description")
         .sort({ createdAt: -1 })
         .limit(limit);
 
@@ -163,6 +172,9 @@ export class QuizQuestionService {
         difficulty,
         isActive: true,
       })
+        .populate("categoryId", "name slug icon color")
+        .populate("subjectId", "title description icon color")
+        .populate("lessonId", "title description")
         .sort({ createdAt: -1 })
         .limit(limit);
 

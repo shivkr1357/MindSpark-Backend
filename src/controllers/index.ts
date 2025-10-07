@@ -1,3 +1,4 @@
+export { CategoryController } from "./CategoryController.js";
 export { SubjectController } from "./SubjectController.js";
 export { SyllabusController } from "./SyllabusController.js";
 export { QuestionController } from "./QuestionController.js";
@@ -10,3 +11,4 @@ export { MemeController } from "./MemeController.js";
 export { MotivationController } from "./MotivationController.js";
 export { CodingQuestionController } from "./CodingQuestionController.js";
 export { LessonController } from "./LessonController.js";
+export { UserProgressController } from "./UserProgressController.js";

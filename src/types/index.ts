@@ -1,4 +1,23 @@
 // ============================================================================
+// CATEGORY TYPES
+// ============================================================================
+
+export interface ICategory {
+  _id?: string;
+  name: string;
+  slug: string;
+  description: string;
+  icon?: string;
+  color?: string;
+  order?: number;
+  isActive?: boolean;
+  parentCategoryId?: string | null;
+  createdBy: string; // User ID
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// ============================================================================
 // USER TYPES
 // ============================================================================
 
@@ -35,6 +54,7 @@ export interface ISubject {
   description: string;
   icon?: string;
   color?: string;
+  categoryId?: string; // Reference to Category
   difficulty:
     | "Easy"
     | "Medium"
@@ -125,7 +145,8 @@ export interface IInterviewQuestion {
     | "Advanced"
     | "Expert";
   explanation: string;
-  category?: string;
+  categoryId?: string; // Reference to Category
+  lessonId?: string; // Reference to Lesson
   createdBy: string; // User ID
   createdAt: Date;
   updatedAt: Date;
@@ -142,6 +163,7 @@ export interface IFunContent {
   content: string;
   fileUrl?: string;
   subjectId?: string;
+  categoryId?: string; // Reference to Category
   difficulty?:
     | "Easy"
     | "Medium"
@@ -180,11 +202,23 @@ export interface PaginatedResponse<T> {
 // REQUEST TYPES
 // ============================================================================
 
+export interface CreateCategoryRequest {
+  name: string;
+  slug?: string;
+  description: string;
+  icon?: string;
+  color?: string;
+  order?: number;
+  isActive?: boolean;
+  parentCategoryId?: string | null;
+}
+
 export interface CreateSubjectRequest {
   title: string;
   description: string;
   icon?: string;
   color?: string;
+  categoryId?: string;
   difficulty:
     | "Easy"
     | "Medium"
@@ -223,7 +257,7 @@ export interface CreateQuestionRequest {
     | "Advanced"
     | "Expert";
   explanation: string;
-  category?: string;
+  categoryId?: string;
 }
 
 export interface CreateFunContentRequest {

@@ -14,13 +14,16 @@ export class SubjectController {
    */
   public createSubject = async (
     req: AuthenticatedRequest,
-    res: Response,
+    res: Response
   ): Promise<void> => {
     try {
+      console.log("req.user", req.user);
       const { title, description, icon, color, difficulty, estimatedTime } =
         req.body;
+      console.log("req.body", req.body);
       const createdBy = req.user?.uid;
 
+      console.log(createdBy);
       if (!createdBy) {
         res.status(401).json({
           success: false,
@@ -28,10 +31,10 @@ export class SubjectController {
         });
         return;
       }
-
+      console.log(createdBy);
       const subject = await this.subjectService.createSubject(
         { title, description, icon, color, difficulty, estimatedTime },
-        createdBy,
+        createdBy
       );
 
       res.status(201).json({
@@ -54,7 +57,7 @@ export class SubjectController {
    */
   public getAllSubjects = async (
     req: Request,
-    res: Response,
+    res: Response
   ): Promise<void> => {
     try {
       const page = parseInt(req.query.page as string) || 1;
@@ -62,7 +65,7 @@ export class SubjectController {
 
       const { subjects, total } = await this.subjectService.getAllSubjects(
         page,
-        limit,
+        limit
       );
 
       res.status(200).json({
@@ -89,7 +92,7 @@ export class SubjectController {
    */
   public getSubjectById = async (
     req: Request,
-    res: Response,
+    res: Response
   ): Promise<void> => {
     try {
       const { id } = req.params;
@@ -121,7 +124,7 @@ export class SubjectController {
    */
   public updateSubject = async (
     req: AuthenticatedRequest,
-    res: Response,
+    res: Response
   ): Promise<void> => {
     try {
       const { id } = req.params;
@@ -149,7 +152,7 @@ export class SubjectController {
    */
   public deleteSubject = async (
     req: AuthenticatedRequest,
-    res: Response,
+    res: Response
   ): Promise<void> => {
     try {
       const { id } = req.params;
@@ -174,7 +177,7 @@ export class SubjectController {
    */
   public searchSubjects = async (
     req: Request,
-    res: Response,
+    res: Response
   ): Promise<void> => {
     try {
       const { q: query } = req.query;
@@ -192,7 +195,7 @@ export class SubjectController {
       const { subjects, total } = await this.subjectService.searchSubjects(
         query as string,
         page,
-        limit,
+        limit
       );
 
       res.status(200).json({
@@ -219,7 +222,7 @@ export class SubjectController {
    */
   public getSubjectsByDifficulty = async (
     req: Request,
-    res: Response,
+    res: Response
   ): Promise<void> => {
     try {
       const { difficulty } = req.params;
@@ -230,7 +233,7 @@ export class SubjectController {
         await this.subjectService.getSubjectsByDifficulty(
           difficulty,
           page,
-          limit,
+          limit
         );
 
       res.status(200).json({
@@ -257,7 +260,7 @@ export class SubjectController {
    */
   public getSubjectStats = async (
     req: AuthenticatedRequest,
-    res: Response,
+    res: Response
   ): Promise<void> => {
     try {
       const stats = await this.subjectService.getSubjectStats();
