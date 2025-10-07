@@ -24,7 +24,24 @@ export class CodingQuestionService {
         query.interviewQuestionId = filters.interviewQuestionId;
       }
 
+      // First, sanitize empty string refs to null
+      await CodingQuestion.updateMany(
+        { subjectId: "" },
+        { $set: { subjectId: null } }
+      );
+      await CodingQuestion.updateMany(
+        { categoryId: "" },
+        { $set: { categoryId: null } }
+      );
+      await CodingQuestion.updateMany(
+        { lessonId: "" },
+        { $set: { lessonId: null } }
+      );
+
       const codingQuestions = await CodingQuestion.find(query)
+        .populate("categoryId", "name slug icon color")
+        .populate("subjectId", "title description icon color")
+        .populate("lessonId", "title description")
         .sort({ createdAt: -1 })
         .limit(filters.limit || 50);
 
@@ -48,7 +65,10 @@ export class CodingQuestionService {
       const codingQuestion = await CodingQuestion.findOne({
         _id: id,
         isActive: true,
-      });
+      })
+        .populate("categoryId", "name slug icon color")
+        .populate("subjectId", "title description icon color")
+        .populate("lessonId", "title description");
 
       if (!codingQuestion) {
         throw new Error("Coding question not found");

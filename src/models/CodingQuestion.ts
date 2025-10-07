@@ -38,7 +38,7 @@ interface IExample {
   explanation?: string;
 }
 
-interface ITestCase {
+export interface ITestCase {
   input: string;
   expectedOutput: string;
   isPublic: boolean; // whether this test case is visible to users

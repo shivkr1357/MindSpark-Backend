@@ -37,7 +37,7 @@ export type { IQuizQuestion } from "./QuizQuestion.js";
 export type { IPuzzle } from "./Puzzle.js";
 export type { IMeme } from "./Meme.js";
 export type { IMotivation } from "./Motivation.js";
-export type { ICodingQuestion } from "./CodingQuestion.js";
+export type { ICodingQuestion, ITestCase } from "./CodingQuestion.js";
 export type { ILesson } from "./Lesson.js";
 export type { IUserLessonProgress } from "./UserLessonProgress.js";
 export type { IUserQuizAttempt } from "./UserQuizAttempt.js";
