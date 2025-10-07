@@ -8,13 +8,21 @@ export class UserService {
   public async createOrUpdateUser(firebaseUser: {
     uid: string;
     name?: string;
-    display_name?: string;
     email: string;
   }): Promise<IUser> {
     try {
+      console.log("📝 Creating/updating user with Firebase data:", {
+        uid: firebaseUser.uid,
+        email: firebaseUser.email,
+        name: firebaseUser.name,
+      });
+
       const userData = {
         uid: firebaseUser.uid,
-        name: firebaseUser.name || firebaseUser.display_name || "Unknown User",
+        name:
+          firebaseUser.name ||
+          firebaseUser.email?.split("@")[0] ||
+          "Unknown User",
         email: firebaseUser.email,
       };
 
@@ -28,18 +36,22 @@ export class UserService {
 
       if (user) {
         // Update existing user
+        console.log("🔄 Updating existing user:", user._id);
         user.uid = firebaseUser.uid;
-        user.name = firebaseUser.name || firebaseUser.display_name || user.name;
+        user.name = firebaseUser.name || user.name;
         user.email = firebaseUser.email;
         await user.save();
+        console.log("✅ User updated successfully");
       } else {
         // Create new user
+        console.log("➕ Creating new user");
         user = await User.create(userData);
+        console.log("✅ New user created:", user._id);
       }
 
       return user.toObject();
     } catch (error) {
-      console.error("Error creating/updating user:", error);
+      console.error("❌ Error creating/updating user:", error);
       throw new Error("Failed to create or update user");
     }
   }

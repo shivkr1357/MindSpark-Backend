@@ -54,28 +54,6 @@ const subjectSchema = new Schema<ISubjectDocument>(
       type: String,
       default: "1 hour",
     },
-    totalLessons: {
-      type: Number,
-      default: 0,
-      min: 0,
-    },
-    completedLessons: {
-      type: Number,
-      default: 0,
-      min: 0,
-      validate: {
-        validator: function (this: ISubjectDocument, value: number) {
-          return value <= (this.totalLessons || 0);
-        },
-        message: "Completed lessons cannot exceed total lessons",
-      },
-    },
-    progress: {
-      type: Number,
-      default: 0,
-      min: 0,
-      max: 100,
-    },
     createdBy: {
       type: String,
       required: true,
@@ -93,18 +71,6 @@ subjectSchema.index({ difficulty: 1 });
 subjectSchema.index({ categoryId: 1 });
 subjectSchema.index({ createdBy: 1 });
 subjectSchema.index({ createdAt: -1 });
-
-// Pre-save middleware to calculate progress
-subjectSchema.pre("save", function (next) {
-  if (this.totalLessons && this.totalLessons > 0) {
-    this.progress = Math.round(
-      (this.completedLessons || 0 / this.totalLessons || 0) * 100
-    );
-  } else {
-    this.progress = 0;
-  }
-  next();
-});
 
 // Ensure virtual fields are serialized
 subjectSchema.set("toJSON", { virtuals: true });

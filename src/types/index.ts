@@ -64,9 +64,6 @@ export interface ISubject {
     | "Advanced"
     | "Expert";
   estimatedTime?: string;
-  totalLessons?: number;
-  completedLessons?: number;
-  progress?: number;
   createdBy: string; // User ID
   createdAt: Date;
   updatedAt: Date;

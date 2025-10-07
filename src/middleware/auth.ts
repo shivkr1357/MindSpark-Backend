@@ -12,7 +12,7 @@ export class AuthMiddleware {
   public static async verifyToken(
     req: AuthenticatedRequest,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ): Promise<void> {
     try {
       const authHeader = req.headers.authorization;
@@ -30,11 +30,20 @@ export class AuthMiddleware {
       // Verify Firebase token
       const decodedToken = await verifyFirebaseToken(token);
 
+      console.log("🔑 Firebase token verified for user:", {
+        uid: decodedToken.uid,
+        email: decodedToken.email,
+      });
+
       // Get or create user from database
       const user = await AuthMiddleware.userService.createOrUpdateUser({
         uid: decodedToken.uid,
         email: decodedToken.email || "",
-        name: decodedToken.name || decodedToken.display_name,
+        name:
+          decodedToken.name ||
+          (decodedToken as any).displayName ||
+          decodedToken.email?.split("@")[0] ||
+          "Unknown User",
       });
 
       // Attach user data to request
@@ -42,7 +51,11 @@ export class AuthMiddleware {
       req.firebaseUser = {
         uid: decodedToken.uid,
         email: decodedToken.email || "",
-        name: decodedToken.name || decodedToken.display_name || "Unknown User",
+        name:
+          decodedToken.name ||
+          (decodedToken as any).displayName ||
+          decodedToken.email?.split("@")[0] ||
+          "Unknown User",
       };
 
       next();
@@ -61,7 +74,7 @@ export class AuthMiddleware {
   public static async optionalAuth(
     req: AuthenticatedRequest,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ): Promise<void> {
     try {
       const authHeader = req.headers.authorization;
@@ -78,14 +91,22 @@ export class AuthMiddleware {
       const user = await AuthMiddleware.userService.createOrUpdateUser({
         uid: decodedToken.uid,
         email: decodedToken.email || "",
-        name: decodedToken.name || decodedToken.display_name,
+        name:
+          decodedToken.name ||
+          (decodedToken as any).displayName ||
+          decodedToken.email?.split("@")[0] ||
+          "Unknown User",
       });
 
       req.user = user;
       req.firebaseUser = {
         uid: decodedToken.uid,
         email: decodedToken.email || "",
-        name: decodedToken.name || decodedToken.display_name || "Unknown User",
+        name:
+          decodedToken.name ||
+          (decodedToken as any).displayName ||
+          decodedToken.email?.split("@")[0] ||
+          "Unknown User",
       };
 
       next();
@@ -102,7 +123,7 @@ export class AuthMiddleware {
   public static requireAuth(
     req: AuthenticatedRequest,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ): void {
     if (!req.user) {
       res.status(401).json({

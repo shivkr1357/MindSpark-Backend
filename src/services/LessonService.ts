@@ -88,6 +88,7 @@ export class LessonService {
         throw new Error("Invalid lesson ID");
       }
 
+      console.log("updateData", updateData);
       const lesson = await Lesson.findByIdAndUpdate(
         id,
         { ...updateData, updatedAt: new Date() },
