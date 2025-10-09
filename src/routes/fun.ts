@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { FunContentController } from "../controllers/FunContentController";
+import { FunContentController } from "../controllers/FunContentController.js";
 import {
   AuthMiddleware,
   RoleMiddleware,
   ValidationMiddleware,
-} from "../middleware/index";
-import { AuthenticatedRequestHandler } from "../types/index";
+} from "../middleware/index.js";
+import { AuthenticatedRequestHandler } from "../types/index.js";
 
 const router = Router();
 const funContentController = new FunContentController();
