@@ -318,6 +318,23 @@ npm test            # Run tests
 
 ## 🚀 Deployment
 
+### Deploy to Vercel (Recommended)
+
+This backend is optimized for serverless deployment on Vercel:
+
+1. **Quick Start**: Follow [QUICK_START.md](./QUICK_START.md) for step-by-step instructions
+2. **Detailed Guide**: See [VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md) for comprehensive documentation
+3. **Checklist**: Use [DEPLOYMENT_CHECKLIST.md](./DEPLOYMENT_CHECKLIST.md) to track your deployment progress
+
+```bash
+# Quick deploy via CLI
+npm install -g vercel
+vercel login
+vercel --prod
+```
+
+### Traditional Server Deployment
+
 1. **Build the application**
 
    ```bash

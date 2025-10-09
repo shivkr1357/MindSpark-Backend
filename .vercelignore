@@ -1,0 +1,13 @@
+node_modules
+.env
+.env.*
+!.env.example
+uploads
+*.log
+.DS_Store
+.git
+__tests__
+*.test.ts
+*.test.js
+coverage
+

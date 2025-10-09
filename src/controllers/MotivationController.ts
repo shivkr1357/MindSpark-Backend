@@ -184,13 +184,13 @@ export class MotivationController {
 
       const result = await MotivationService.incrementEngagement(id, type);
 
-      res.status(200).json(result);
+      return res.status(200).json(result);
     } catch (error) {
       const statusCode =
         error instanceof Error && error.message.includes("not found")
           ? 404
           : 500;
-      res.status(statusCode).json({
+      return res.status(statusCode).json({
         success: false,
         message:
           error instanceof Error ? error.message : "Internal server error",

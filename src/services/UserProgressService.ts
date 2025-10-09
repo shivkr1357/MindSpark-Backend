@@ -88,7 +88,7 @@ export class UserProgressService {
         userId,
         lessonId,
       }).lean();
-      return progress;
+      return progress as any;
     } catch (error) {
       console.error("Error getting lesson progress:", error);
       throw new Error("Failed to get lesson progress");
@@ -102,7 +102,7 @@ export class UserProgressService {
     userId: string,
     page: number = 1,
     limit: number = 50
-  ): Promise<{ progress: IUserLessonProgress[]; total: number }> {
+  ): Promise<{ progress: any[]; total: number }> {
     try {
       const skip = (page - 1) * limit;
 
@@ -116,7 +116,7 @@ export class UserProgressService {
         UserLessonProgress.countDocuments({ userId }),
       ]);
 
-      return { progress, total };
+      return { progress: progress as any, total };
     } catch (error) {
       console.error("Error getting user lesson progress:", error);
       throw new Error("Failed to get user lesson progress");
@@ -181,7 +181,7 @@ export class UserProgressService {
     quizQuestionId?: string,
     page: number = 1,
     limit: number = 50
-  ): Promise<{ attempts: IUserQuizAttempt[]; total: number }> {
+  ): Promise<{ attempts: any[]; total: number }> {
     try {
       const skip = (page - 1) * limit;
       const filter: Record<string, unknown> = { userId };
@@ -197,7 +197,7 @@ export class UserProgressService {
         UserQuizAttempt.countDocuments(filter),
       ]);
 
-      return { attempts, total };
+      return { attempts: attempts as any, total };
     } catch (error) {
       console.error("Error getting quiz attempts:", error);
       throw new Error("Failed to get quiz attempts");
@@ -255,7 +255,7 @@ export class UserProgressService {
     codingQuestionId?: string,
     page: number = 1,
     limit: number = 50
-  ): Promise<{ attempts: IUserCodingAttempt[]; total: number }> {
+  ): Promise<{ attempts: any[]; total: number }> {
     try {
       const skip = (page - 1) * limit;
       const filter: Record<string, unknown> = { userId };
@@ -271,7 +271,7 @@ export class UserProgressService {
         UserCodingAttempt.countDocuments(filter),
       ]);
 
-      return { attempts, total };
+      return { attempts: attempts as any, total };
     } catch (error) {
       console.error("Error getting coding attempts:", error);
       throw new Error("Failed to get coding attempts");
@@ -326,7 +326,7 @@ export class UserProgressService {
     puzzleId?: string,
     page: number = 1,
     limit: number = 50
-  ): Promise<{ attempts: IUserPuzzleAttempt[]; total: number }> {
+  ): Promise<{ attempts: any[]; total: number }> {
     try {
       const skip = (page - 1) * limit;
       const filter: Record<string, unknown> = { userId };
@@ -342,7 +342,7 @@ export class UserProgressService {
         UserPuzzleAttempt.countDocuments(filter),
       ]);
 
-      return { attempts, total };
+      return { attempts: attempts as any, total };
     } catch (error) {
       console.error("Error getting puzzle attempts:", error);
       throw new Error("Failed to get puzzle attempts");
@@ -414,7 +414,7 @@ export class UserProgressService {
     resourceType?: string,
     page: number = 1,
     limit: number = 50
-  ): Promise<{ bookmarks: IUserBookmark[]; total: number }> {
+  ): Promise<{ bookmarks: any[]; total: number }> {
     try {
       const skip = (page - 1) * limit;
       const filter: Record<string, unknown> = { userId };
@@ -429,7 +429,7 @@ export class UserProgressService {
         UserBookmark.countDocuments(filter),
       ]);
 
-      return { bookmarks, total };
+      return { bookmarks: bookmarks as any, total };
     } catch (error) {
       console.error("Error getting bookmarks:", error);
       throw new Error("Failed to get bookmarks");
@@ -510,7 +510,7 @@ export class UserProgressService {
     status?: string,
     page: number = 1,
     limit: number = 50
-  ): Promise<{ enrollments: IUserSubjectEnrollment[]; total: number }> {
+  ): Promise<{ enrollments: any[]; total: number }> {
     try {
       const skip = (page - 1) * limit;
       const filter: Record<string, unknown> = { userId };
@@ -526,7 +526,7 @@ export class UserProgressService {
         UserSubjectEnrollment.countDocuments(filter),
       ]);
 
-      return { enrollments, total };
+      return { enrollments: enrollments as any, total };
     } catch (error) {
       console.error("Error getting user enrollments:", error);
       throw new Error("Failed to get user enrollments");
@@ -547,7 +547,7 @@ export class UserProgressService {
       })
         .populate("subjectId", "title description icon color")
         .lean();
-      return enrollment;
+      return enrollment as any;
     } catch (error) {
       console.error("Error getting enrollment by subject:", error);
       throw new Error("Failed to get enrollment");
@@ -646,9 +646,9 @@ export class UserProgressService {
    * Get user dashboard data
    */
   public async getUserDashboard(userId: string): Promise<{
-    recentProgress: IUserLessonProgress[];
-    recentQuizzes: IUserQuizAttempt[];
-    activeEnrollments: IUserSubjectEnrollment[];
+    recentProgress: any[];
+    recentQuizzes: any[];
+    activeEnrollments: any[];
     statistics: any;
   }> {
     try {
@@ -673,9 +673,9 @@ export class UserProgressService {
         ]);
 
       return {
-        recentProgress,
-        recentQuizzes,
-        activeEnrollments,
+        recentProgress: recentProgress as any,
+        recentQuizzes: recentQuizzes as any,
+        activeEnrollments: activeEnrollments as any,
         statistics,
       };
     } catch (error) {

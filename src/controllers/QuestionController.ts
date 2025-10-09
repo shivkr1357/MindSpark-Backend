@@ -24,7 +24,7 @@ export class QuestionController {
         correctAnswer,
         difficulty,
         explanation,
-        category,
+        categoryId,
       } = req.body;
       const createdBy = req.user?.uid;
 
@@ -38,7 +38,14 @@ export class QuestionController {
 
       const interviewQuestion = await this.questionService.createQuestion(
         subjectId,
-        { question, options, correctAnswer, difficulty, explanation, category },
+        {
+          question,
+          options,
+          correctAnswer,
+          difficulty,
+          explanation,
+          categoryId,
+        },
         createdBy
       );
 

@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { QuizQuestionService } from "../services/QuizQuestionService.js";
-import { validateRequest } from "../middleware/validation.js";
 
 export class QuizQuestionController {
   // Get all quiz questions

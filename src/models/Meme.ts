@@ -167,7 +167,8 @@ memeSchema.virtual("engagementScore").get(function (this: IMeme) {
 memeSchema.virtual("popularityRating").get(function (this: IMeme) {
   const daysSinceCreation =
     (Date.now() - this.createdAt.getTime()) / (1000 * 60 * 60 * 24);
-  return this.engagementScore / Math.max(daysSinceCreation, 1);
+  const engagementScore = this.likes + this.shares + this.views;
+  return engagementScore / Math.max(daysSinceCreation, 1);
 });
 
 // Ensure virtual fields are serialized

@@ -208,3 +208,7 @@ uploads/
 firebase-adminsdk-*.json
 *firebase-adminsdk*.json
 projecttutorial-*.json
+
+# Vercel
+.vercel
+.vercel/**

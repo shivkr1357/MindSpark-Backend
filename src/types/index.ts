@@ -119,6 +119,7 @@ export interface ISyllabus {
     | "Intermediate"
     | "Advanced"
     | "Expert";
+  isActive?: boolean;
   createdBy: string; // User ID
   createdAt: Date;
   updatedAt: Date;

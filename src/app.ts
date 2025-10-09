@@ -160,7 +160,7 @@ app.use(
     }
 
     // Default error
-    res.status((error as any).status || 500).json({
+    return res.status((error as any).status || 500).json({
       success: false,
       error:
         process.env.NODE_ENV === "production"

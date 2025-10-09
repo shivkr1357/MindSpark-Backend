@@ -14,6 +14,8 @@ import motivationsRouter from "./motivations.js";
 import codingQuestionsRouter from "./codingQuestions.js";
 import lessonsRouter from "./lessons.js";
 import userProgressRouter from "./userProgress.js";
+import modulesRouter from "./modules.js";
+import lessonModelsRouter from "./lessonModels.js";
 
 const router = Router();
 
@@ -43,5 +45,7 @@ router.use("/motivations", motivationsRouter);
 router.use("/coding-questions", codingQuestionsRouter);
 router.use("/lessons", lessonsRouter);
 router.use("/user-progress", userProgressRouter);
+router.use("/modules", modulesRouter);
+router.use("/lesson-models", lessonModelsRouter);
 
 export default router;
