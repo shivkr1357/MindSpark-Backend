@@ -177,7 +177,10 @@ export class ValidationMiddleware {
       body("totalDuration")
         .optional()
         .trim()
-        .withMessage("Total duration must be a string"),
+        .isString()
+        .withMessage("Total duration must be a string")
+        .isLength({ max: 50 })
+        .withMessage("Total duration must be less than 50 characters"),
       body("difficulty")
         .isIn([
           "Easy",
