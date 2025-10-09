@@ -24,7 +24,11 @@ app.use(
 
 // CORS configuration
 const corsOptions = {
-  origin: true, // Allow all origins for now
+  origin: [
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "https://mind-spark-admin.itsindianguy.in",
+  ], // Allow all origins for now
   credentials: true,
   optionsSuccessStatus: 200,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
