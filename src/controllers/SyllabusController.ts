@@ -14,11 +14,11 @@ export class SyllabusController {
    */
   public createSyllabus = async (
     req: AuthenticatedRequest,
-    res: Response,
+    res: Response
   ): Promise<void> => {
     try {
       const { subjectId } = req.params;
-      const { title, description, modules, difficulty } = req.body;
+      const { title, description, totalDuration, difficulty } = req.body;
       const createdBy = req.user?.uid;
 
       if (!createdBy) {
@@ -31,8 +31,8 @@ export class SyllabusController {
 
       const syllabus = await this.syllabusService.createSyllabus(
         subjectId,
-        { title, description, modules, difficulty },
-        createdBy,
+        { title, description, totalDuration, difficulty },
+        createdBy
       );
 
       res.status(201).json({
@@ -55,12 +55,12 @@ export class SyllabusController {
    */
   public getSyllabusBySubject = async (
     req: Request,
-    res: Response,
+    res: Response
   ): Promise<void> => {
     try {
       const { subjectId } = req.params;
       const syllabus = await this.syllabusService.getSyllabusBySubject(
-        subjectId,
+        subjectId
       );
 
       if (!syllabus) {
@@ -89,7 +89,7 @@ export class SyllabusController {
    */
   public getSyllabusById = async (
     req: Request,
-    res: Response,
+    res: Response
   ): Promise<void> => {
     try {
       const { id } = req.params;
@@ -121,7 +121,7 @@ export class SyllabusController {
    */
   public updateSyllabus = async (
     req: AuthenticatedRequest,
-    res: Response,
+    res: Response
   ): Promise<void> => {
     try {
       const { id } = req.params;
@@ -129,7 +129,7 @@ export class SyllabusController {
 
       const syllabus = await this.syllabusService.updateSyllabus(
         id,
-        updateData,
+        updateData
       );
 
       res.status(200).json({
@@ -152,7 +152,7 @@ export class SyllabusController {
    */
   public deleteSyllabus = async (
     req: AuthenticatedRequest,
-    res: Response,
+    res: Response
   ): Promise<void> => {
     try {
       const { id } = req.params;
@@ -177,7 +177,7 @@ export class SyllabusController {
    */
   public getAllSyllabi = async (
     req: AuthenticatedRequest,
-    res: Response,
+    res: Response
   ): Promise<void> => {
     try {
       const page = parseInt(req.query.page as string) || 1;
@@ -185,7 +185,7 @@ export class SyllabusController {
 
       const { syllabi, total } = await this.syllabusService.getAllSyllabi(
         page,
-        limit,
+        limit
       );
 
       res.status(200).json({
@@ -212,7 +212,7 @@ export class SyllabusController {
    */
   public getSyllabiByDifficulty = async (
     req: Request,
-    res: Response,
+    res: Response
   ): Promise<void> => {
     try {
       const { difficulty } = req.params;
@@ -223,7 +223,7 @@ export class SyllabusController {
         await this.syllabusService.getSyllabiByDifficulty(
           difficulty,
           page,
-          limit,
+          limit
         );
 
       res.status(200).json({
@@ -241,118 +241,6 @@ export class SyllabusController {
       res.status(500).json({
         success: false,
         error: "Failed to get syllabi by difficulty",
-      });
-    }
-  };
-
-  /**
-   * Add module to syllabus (Admin only)
-   */
-  public addModule = async (
-    req: AuthenticatedRequest,
-    res: Response,
-  ): Promise<void> => {
-    try {
-      const { id } = req.params;
-      const moduleData = req.body;
-
-      const syllabus = await this.syllabusService.addModule(id, moduleData);
-
-      res.status(200).json({
-        success: true,
-        data: syllabus,
-        message: "Module added successfully",
-      });
-    } catch (error) {
-      console.error("Add module error:", error);
-      res.status(500).json({
-        success: false,
-        error: error instanceof Error ? error.message : "Failed to add module",
-      });
-    }
-  };
-
-  /**
-   * Update module in syllabus (Admin only)
-   */
-  public updateModule = async (
-    req: AuthenticatedRequest,
-    res: Response,
-  ): Promise<void> => {
-    try {
-      const { id, moduleIndex } = req.params;
-      const moduleData = req.body;
-
-      const syllabus = await this.syllabusService.updateModule(
-        id,
-        parseInt(moduleIndex),
-        moduleData,
-      );
-
-      res.status(200).json({
-        success: true,
-        data: syllabus,
-        message: "Module updated successfully",
-      });
-    } catch (error) {
-      console.error("Update module error:", error);
-      res.status(500).json({
-        success: false,
-        error:
-          error instanceof Error ? error.message : "Failed to update module",
-      });
-    }
-  };
-
-  /**
-   * Delete module from syllabus (Admin only)
-   */
-  public deleteModule = async (
-    req: AuthenticatedRequest,
-    res: Response,
-  ): Promise<void> => {
-    try {
-      const { id, moduleIndex } = req.params;
-
-      const syllabus = await this.syllabusService.deleteModule(
-        id,
-        parseInt(moduleIndex),
-      );
-
-      res.status(200).json({
-        success: true,
-        data: syllabus,
-        message: "Module deleted successfully",
-      });
-    } catch (error) {
-      console.error("Delete module error:", error);
-      res.status(500).json({
-        success: false,
-        error:
-          error instanceof Error ? error.message : "Failed to delete module",
-      });
-    }
-  };
-
-  /**
-   * Get syllabus statistics (Admin only)
-   */
-  public getSyllabusStats = async (
-    req: AuthenticatedRequest,
-    res: Response,
-  ): Promise<void> => {
-    try {
-      const stats = await this.syllabusService.getSyllabusStats();
-
-      res.status(200).json({
-        success: true,
-        data: stats,
-      });
-    } catch (error) {
-      console.error("Get syllabus stats error:", error);
-      res.status(500).json({
-        success: false,
-        error: "Failed to get syllabus statistics",
       });
     }
   };

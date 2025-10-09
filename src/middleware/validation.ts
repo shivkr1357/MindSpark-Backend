@@ -174,28 +174,10 @@ export class ValidationMiddleware {
         .trim()
         .isLength({ max: 500 })
         .withMessage("Description must be less than 500 characters"),
-      body("modules")
-        .isArray({ min: 1 })
-        .withMessage("At least one module is required"),
-      body("modules.*.title")
+      body("totalDuration")
+        .optional()
         .trim()
-        .notEmpty()
-        .withMessage("Module title is required")
-        .isLength({ max: 100 })
-        .withMessage("Module title must be less than 100 characters"),
-      body("modules.*.lessons")
-        .isArray({ min: 1 })
-        .withMessage("Each module must have at least one lesson"),
-      body("modules.*.lessons.*.title")
-        .trim()
-        .notEmpty()
-        .withMessage("Lesson title is required")
-        .isLength({ max: 100 })
-        .withMessage("Lesson title must be less than 100 characters"),
-      body("modules.*.lessons.*.content")
-        .trim()
-        .notEmpty()
-        .withMessage("Lesson content is required"),
+        .withMessage("Total duration must be a string"),
       body("difficulty")
         .isIn([
           "Easy",

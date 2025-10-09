@@ -56,25 +56,4 @@ router.get(
   syllabusController.getSyllabiByDifficulty as any
 );
 
-router.post(
-  "/:id/modules",
-  ValidationMiddleware.validateObjectId("id"),
-
-  syllabusController.addModule as any
-);
-
-router.put(
-  "/:id/modules/:moduleIndex",
-  ValidationMiddleware.validateObjectId("id"),
-  syllabusController.updateModule as any
-);
-
-router.delete(
-  "/:id/modules/:moduleIndex",
-  ValidationMiddleware.validateObjectId("id"),
-  syllabusController.deleteModule as any
-);
-
-router.get("/stats/all", syllabusController.getSyllabusStats as any);
-
 export default router;

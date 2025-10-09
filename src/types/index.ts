@@ -70,7 +70,7 @@ export interface ISubject {
 }
 
 // ============================================================================
-// LESSON TYPES
+// LESSON TYPES (Note: Lessons are now stored in a separate collection)
 // ============================================================================
 
 export interface ILesson {
@@ -91,13 +91,20 @@ export interface ILesson {
 }
 
 // ============================================================================
-// MODULE TYPES
+// MODULE TYPES (Note: Modules are now stored in a separate collection)
 // ============================================================================
 
-export interface IModule {
+export interface IModuleReference {
+  _id?: string;
+  syllabusId: string;
   title: string;
-  lessons: ILesson[];
+  description?: string;
   order: number;
+  duration?: string;
+  isActive?: boolean;
+  createdBy: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 // ============================================================================
@@ -109,7 +116,6 @@ export interface ISyllabus {
   subjectId: string;
   title: string;
   description?: string;
-  modules: IModule[];
   totalDuration?: string;
   difficulty:
     | "Easy"
@@ -231,7 +237,7 @@ export interface CreateSubjectRequest {
 export interface CreateSyllabusRequest {
   title: string;
   description?: string;
-  modules: IModule[];
+  totalDuration?: string;
   difficulty:
     | "Easy"
     | "Medium"
