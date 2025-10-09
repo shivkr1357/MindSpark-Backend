@@ -1,7 +1,7 @@
 import { Response, NextFunction } from "express";
-import { verifyFirebaseToken } from "../config/firebase";
-import { UserService } from "../services/UserService";
-import { AuthenticatedRequest } from "../types/index";
+import { verifyFirebaseToken } from "../config/firebase.js";
+import { UserService } from "../services/UserService.js";
+import { AuthenticatedRequest } from "../types/index.js";
 
 export class AuthMiddleware {
   private static userService = new UserService();
