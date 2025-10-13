@@ -29,13 +29,11 @@ const lessonModelSchema = new Schema<ILessonModel>(
       type: String,
       required: true,
       ref: "Module",
-      index: true,
     },
     syllabusId: {
       type: String,
       required: true,
       ref: "Syllabus",
-      index: true,
     },
     title: {
       type: String,

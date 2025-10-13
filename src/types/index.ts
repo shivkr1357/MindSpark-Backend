@@ -152,6 +152,9 @@ export interface IInterviewQuestion {
   categoryId?: string; // Reference to Category
   lessonId?: string; // Reference to Lesson
   createdBy: string; // User ID
+  featured?: boolean; // Flag for featured questions
+  isActive?: boolean; // Flag for active questions
+  views?: number; // Number of views
   createdAt: Date;
   updatedAt: Date;
 }

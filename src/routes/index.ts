@@ -16,6 +16,7 @@ import lessonsRouter from "./lessons.js";
 import userProgressRouter from "./userProgress.js";
 import modulesRouter from "./modules.js";
 import lessonModelsRouter from "./lessonModels.js";
+import rewardsRouter from "./rewards.js";
 
 const router = Router();
 
@@ -47,5 +48,6 @@ router.use("/lessons", lessonsRouter);
 router.use("/user-progress", userProgressRouter);
 router.use("/modules", modulesRouter);
 router.use("/lesson-models", lessonModelsRouter);
+router.use("/rewards", rewardsRouter);
 
 export default router;

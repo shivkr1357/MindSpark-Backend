@@ -43,6 +43,18 @@ router.post(
 // Get quiz attempts
 router.get("/quizzes/attempts", progressController.getQuizAttempts as any);
 
+// Get attempted question IDs for user
+router.get(
+  "/attempted-questions",
+  progressController.getAttemptedQuestionIds as any
+);
+
+// Get today's progress statistics
+router.get(
+  "/today-stats",
+  progressController.getTodayProgressStatistics as any
+);
+
 // ========================================
 // CODING ATTEMPT ROUTES
 // ========================================

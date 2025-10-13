@@ -70,7 +70,7 @@ const interviewQuestionsData = [
   {
     title: "React component lifecycle methods",
     description: "Understanding React component lifecycle and hooks",
-    category: "React & React Native",
+    categoryId: "670c0274b35e3300154c775a",
     difficulty: "Medium",
     question:
       "Explain the React component lifecycle methods and their modern equivalents with hooks",
@@ -85,7 +85,7 @@ const interviewQuestionsData = [
       "Neither A nor B are correct",
     ],
     correctAnswer: 2,
-    subjectId: "", // Will be filled from subjectMap
+    subjectId: "", // Will be   from subjectMap
     tags: ["react", "lifecycle", "hooks"],
     isActive: true,
     createdBy: "system",

@@ -23,6 +23,10 @@ export { UserCodingAttempt } from "./UserCodingAttempt.js";
 export { UserPuzzleAttempt } from "./UserPuzzleAttempt.js";
 export { UserBookmark } from "./UserBookmark.js";
 export { UserSubjectEnrollment } from "./UserSubjectEnrollment.js";
+export { UserAttemptedQuestion } from "./UserAttemptedQuestion.js";
+export { Reward } from "./Reward.js";
+export { UserReward } from "./UserReward.js";
+export { UserPoints } from "./UserPoints.js";
 
 export type { IUserDocument } from "./User.js";
 export type { ICategoryDocument } from "./Category.js";
@@ -49,3 +53,7 @@ export type { IUserCodingAttempt } from "./UserCodingAttempt.js";
 export type { IUserPuzzleAttempt } from "./UserPuzzleAttempt.js";
 export type { IUserBookmark } from "./UserBookmark.js";
 export type { IUserSubjectEnrollment } from "./UserSubjectEnrollment.js";
+export type { IUserAttemptedQuestion } from "./UserAttemptedQuestion.js";
+export type { IReward } from "./Reward.js";
+export type { IUserReward } from "./UserReward.js";
+export type { IUserPoints } from "./UserPoints.js";

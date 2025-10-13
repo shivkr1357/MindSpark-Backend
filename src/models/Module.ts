@@ -19,7 +19,6 @@ const moduleSchema = new Schema<IModule>(
       type: String,
       required: true,
       ref: "Syllabus",
-      index: true,
     },
     title: {
       type: String,

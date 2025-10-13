@@ -2,13 +2,72 @@ import { Request, Response } from "express";
 import { AuthenticatedRequest } from "../types/index.js";
 import {
   FeaturedContent,
-  FeaturedQuestion,
+  InterviewQuestion,
   TopRatedSubject,
   Achievement,
   ProgressStats,
 } from "../models/index.js";
 
 export class DashboardController {
+  /**
+   * Get featured questions filtered by user attempts
+   */
+  private async getFilteredFeaturedQuestions(
+    userId?: string,
+    limit: number = 10
+  ) {
+    if (userId) {
+      // Get attempted question IDs for this user
+      const { UserAttemptedQuestion } = await import("../models/index.js");
+      const attemptedQuestions = await UserAttemptedQuestion.find(
+        { userId },
+        { questionId: 1, _id: 0 }
+      ).lean();
+
+      const attemptedIds = attemptedQuestions.map((q) => q.questionId);
+
+      console.log(
+        `[getFilteredFeaturedQuestions] User ${userId} attempted questions:`,
+        attemptedIds
+      );
+
+      // Get featured questions from the main InterviewQuestion collection (same as Interview Questions)
+      // Only show questions explicitly marked as featured
+      const featuredQuestions = await InterviewQuestion.find({
+        isActive: true,
+        featured: true,
+        _id: { $nin: attemptedIds },
+      })
+        .populate("subjectId", "title")
+        .populate("categoryId", "name slug icon color")
+        .sort({ views: -1, createdAt: -1 })
+        .limit(limit);
+
+      console.log(
+        `[getFilteredFeaturedQuestions] Found ${featuredQuestions.length} featured questions (excluding ${attemptedIds.length} attempted)`
+      );
+      console.log(
+        `[getFilteredFeaturedQuestions] Attempted IDs:`,
+        attemptedIds
+      );
+      console.log(
+        `[getFilteredFeaturedQuestions] Featured question IDs:`,
+        featuredQuestions.map((q: any) => q._id)
+      );
+
+      return featuredQuestions;
+    } else {
+      // No user authentication, return featured questions from main InterviewQuestion collection
+      return await InterviewQuestion.find({
+        isActive: true,
+        featured: true,
+      })
+        .populate("subjectId", "title")
+        .populate("categoryId", "name slug icon color")
+        .sort({ views: -1, createdAt: -1 })
+        .limit(limit);
+    }
+  }
   /**
    * Get featured content for dashboard
    */
@@ -46,9 +105,11 @@ export class DashboardController {
     res: Response
   ): Promise<void> => {
     try {
-      const featuredQuestions = await FeaturedQuestion.find({ isActive: true })
-        .sort({ views: -1 })
-        .limit(10);
+      const userId = req.user?.uid;
+      const featuredQuestions = await this.getFilteredFeaturedQuestions(
+        userId,
+        10
+      );
 
       res.status(200).json({
         success: true,
@@ -199,7 +260,7 @@ export class DashboardController {
         FeaturedContent.find({ isActive: true })
           .sort({ rating: -1, students: -1 })
           .limit(5),
-        FeaturedQuestion.find({ isActive: true }).sort({ views: -1 }).limit(5),
+        this.getFilteredFeaturedQuestions(userId, 5),
         TopRatedSubject.find({ isActive: true })
           .sort({ rating: -1, students: -1 })
           .limit(5),

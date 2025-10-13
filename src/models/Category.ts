@@ -68,8 +68,7 @@ const categorySchema = new Schema<ICategoryDocument>(
 );
 
 // Indexes for better query performance
-categorySchema.index({ name: 1 });
-categorySchema.index({ slug: 1 });
+// Note: name and slug already have unique indexes from the schema definition
 categorySchema.index({ isActive: 1 });
 categorySchema.index({ order: 1 });
 categorySchema.index({ parentCategoryId: 1 });

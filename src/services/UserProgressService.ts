@@ -5,6 +5,7 @@ import {
   UserPuzzleAttempt,
   UserBookmark,
   UserSubjectEnrollment,
+  UserAttemptedQuestion,
 } from "../models/index.js";
 import type {
   IUserLessonProgress,
@@ -13,9 +14,17 @@ import type {
   IUserPuzzleAttempt,
   IUserBookmark,
   IUserSubjectEnrollment,
+  IUserAttemptedQuestion,
 } from "../models/index.js";
+import { RewardService } from "./RewardService.js";
 
 export class UserProgressService {
+  private rewardService: RewardService;
+
+  constructor() {
+    this.rewardService = new RewardService();
+  }
+
   // ========================================
   // LESSON PROGRESS
   // ========================================
@@ -30,6 +39,7 @@ export class UserProgressService {
       progress?: number;
       timeSpent?: number;
       sectionsCompleted?: string[];
+      completed?: boolean;
     }
   ): Promise<IUserLessonProgress> {
     try {
@@ -40,6 +50,8 @@ export class UserProgressService {
 
       if (existingProgress) {
         // Update existing
+        const wasCompleted = existingProgress.completed;
+
         if (progressData.progress !== undefined) {
           existingProgress.progress = progressData.progress;
         }
@@ -54,6 +66,17 @@ export class UserProgressService {
             ]),
           ];
         }
+        if (progressData.completed !== undefined) {
+          existingProgress.completed = progressData.completed;
+          if (progressData.completed && !existingProgress.completedAt) {
+            existingProgress.completedAt = new Date();
+
+            // Award points for lesson completion (only if not previously completed)
+            if (!wasCompleted) {
+              await this.rewardService.awardPoints(userId, "lesson_completed");
+            }
+          }
+        }
         existingProgress.lastAccessedAt = new Date();
         await existingProgress.save();
         return existingProgress.toObject();
@@ -65,9 +88,17 @@ export class UserProgressService {
           progress: progressData.progress || 0,
           timeSpent: progressData.timeSpent || 0,
           sectionsCompleted: progressData.sectionsCompleted || [],
+          completed: progressData.completed || false,
+          completedAt: progressData.completed ? new Date() : undefined,
           lastAccessedAt: new Date(),
         });
         await progress.save();
+
+        // Award points if completed immediately
+        if (progressData.completed) {
+          await this.rewardService.awardPoints(userId, "lesson_completed");
+        }
+
         return progress.toObject();
       }
     } catch (error) {
@@ -166,6 +197,33 @@ export class UserProgressService {
       });
 
       await attempt.save();
+
+      // Record each individual question as attempted
+      for (const answer of attemptData.answers) {
+        await this.recordAttemptedQuestion(userId, {
+          questionId: answer.questionId,
+          questionType: "quiz",
+          isCorrect: answer.isCorrect,
+          selectedAnswer: answer.selectedAnswer,
+          points: answer.points,
+          timeSpent: Math.round(
+            attemptData.timeSpent / attemptData.answers.length
+          ), // Distribute time across questions
+        });
+      }
+
+      // Award points for quiz completion
+      const accuracy = (correctAnswers / attemptData.totalQuestions) * 100;
+      await this.rewardService.awardPoints(userId, "quiz_completed", {
+        correctAnswers,
+        totalQuestions: attemptData.totalQuestions,
+        accuracy,
+      });
+
+      console.log(
+        `[recordQuizAttempt] Recorded quiz attempt for user ${userId}, quiz ${quizQuestionId}: ${correctAnswers}/${attemptData.totalQuestions} correct`
+      );
+
       return attempt.toObject();
     } catch (error) {
       console.error("Error recording quiz attempt:", error);
@@ -201,6 +259,187 @@ export class UserProgressService {
     } catch (error) {
       console.error("Error getting quiz attempts:", error);
       throw new Error("Failed to get quiz attempts");
+    }
+  }
+
+  /**
+   * Get attempted question IDs for a user
+   */
+  public async getAttemptedQuestionIds(userId: string): Promise<string[]> {
+    try {
+      const attemptedQuestions = await UserAttemptedQuestion.find(
+        { userId },
+        { questionId: 1, _id: 0 }
+      ).lean();
+
+      const result = attemptedQuestions.map((q) => q.questionId);
+
+      console.log(
+        `[getAttemptedQuestionIds] Found ${result.length} attempted questions for user ${userId}:`,
+        result
+      );
+
+      return result;
+    } catch (error) {
+      console.error("Error getting attempted question IDs:", error);
+      throw new Error("Failed to get attempted question IDs");
+    }
+  }
+
+  /**
+   * Record an attempted question
+   */
+  public async recordAttemptedQuestion(
+    userId: string,
+    questionData: {
+      questionId: string;
+      questionType: "quiz" | "interview" | "coding" | "puzzle";
+      subjectId?: string;
+      moduleId?: string;
+      lessonId?: string;
+      categoryId?: string;
+      difficulty?:
+        | "Easy"
+        | "Medium"
+        | "Hard"
+        | "Beginner"
+        | "Intermediate"
+        | "Advanced"
+        | "Expert";
+      isCorrect: boolean;
+      selectedAnswer?: string;
+      points: number;
+      timeSpent: number;
+    }
+  ): Promise<IUserAttemptedQuestion> {
+    try {
+      // Use upsert to handle potential duplicates
+      const attemptedQuestion = await UserAttemptedQuestion.findOneAndUpdate(
+        { userId, questionId: questionData.questionId },
+        {
+          userId,
+          questionId: questionData.questionId,
+          questionType: questionData.questionType,
+          subjectId: questionData.subjectId,
+          moduleId: questionData.moduleId,
+          lessonId: questionData.lessonId,
+          categoryId: questionData.categoryId,
+          difficulty: questionData.difficulty,
+          isCorrect: questionData.isCorrect,
+          selectedAnswer: questionData.selectedAnswer,
+          points: questionData.points,
+          timeSpent: questionData.timeSpent,
+          attemptedAt: new Date(),
+        },
+        { upsert: true, new: true }
+      );
+
+      console.log(
+        `[recordAttemptedQuestion] Recorded attempt for user ${userId}, question ${questionData.questionId}, correct: ${questionData.isCorrect}`
+      );
+
+      return attemptedQuestion.toObject();
+    } catch (error) {
+      console.error("Error recording attempted question:", error);
+      throw new Error("Failed to record attempted question");
+    }
+  }
+
+  /**
+   * Get attempted questions by type
+   */
+  public async getAttemptedQuestionsByType(
+    userId: string,
+    questionType: "quiz" | "interview" | "coding" | "puzzle"
+  ): Promise<IUserAttemptedQuestion[]> {
+    try {
+      const attemptedQuestions = await UserAttemptedQuestion.find({
+        userId,
+        questionType,
+      })
+        .sort({ attemptedAt: -1 })
+        .lean();
+
+      console.log(
+        `[getAttemptedQuestionsByType] Found ${attemptedQuestions.length} ${questionType} attempts for user ${userId}`
+      );
+
+      return attemptedQuestions as unknown as IUserAttemptedQuestion[];
+    } catch (error) {
+      console.error("Error getting attempted questions by type:", error);
+      throw new Error("Failed to get attempted questions by type");
+    }
+  }
+
+  /**
+   * Get attempted questions statistics
+   */
+  public async getAttemptedQuestionsStats(userId: string): Promise<{
+    totalAttempted: number;
+    totalCorrect: number;
+    accuracy: number;
+    byType: {
+      quiz: { attempted: number; correct: number; accuracy: number };
+      interview: { attempted: number; correct: number; accuracy: number };
+      coding: { attempted: number; correct: number; accuracy: number };
+      puzzle: { attempted: number; correct: number; accuracy: number };
+    };
+  }> {
+    try {
+      const stats = await UserAttemptedQuestion.aggregate([
+        { $match: { userId } },
+        {
+          $group: {
+            _id: "$questionType",
+            attempted: { $sum: 1 },
+            correct: { $sum: { $cond: ["$isCorrect", 1, 0] } },
+          },
+        },
+      ]);
+
+      const byType = {
+        quiz: { attempted: 0, correct: 0, accuracy: 0 },
+        interview: { attempted: 0, correct: 0, accuracy: 0 },
+        coding: { attempted: 0, correct: 0, accuracy: 0 },
+        puzzle: { attempted: 0, correct: 0, accuracy: 0 },
+      };
+
+      let totalAttempted = 0;
+      let totalCorrect = 0;
+
+      stats.forEach((stat) => {
+        const type = stat._id as keyof typeof byType;
+        if (byType[type]) {
+          byType[type].attempted = stat.attempted;
+          byType[type].correct = stat.correct;
+          byType[type].accuracy =
+            stat.attempted > 0
+              ? Math.round((stat.correct / stat.attempted) * 100)
+              : 0;
+
+          totalAttempted += stat.attempted;
+          totalCorrect += stat.correct;
+        }
+      });
+
+      const accuracy =
+        totalAttempted > 0
+          ? Math.round((totalCorrect / totalAttempted) * 100)
+          : 0;
+
+      console.log(
+        `[getAttemptedQuestionsStats] Stats for user ${userId}: ${totalAttempted} attempted, ${totalCorrect} correct, ${accuracy}% accuracy`
+      );
+
+      return {
+        totalAttempted,
+        totalCorrect,
+        accuracy,
+        byType,
+      };
+    } catch (error) {
+      console.error("Error getting attempted questions stats:", error);
+      throw new Error("Failed to get attempted questions stats");
     }
   }
 
@@ -681,6 +920,118 @@ export class UserProgressService {
     } catch (error) {
       console.error("Error getting user dashboard:", error);
       throw new Error("Failed to get user dashboard");
+    }
+  }
+
+  /**
+   * Get today's progress statistics
+   */
+  public async getTodayProgressStatistics(userId: string): Promise<{
+    lessonsCompletedToday: number;
+    questionsAnsweredToday: number;
+    accuracyToday: number;
+    studyTimeToday: number; // in minutes
+  }> {
+    try {
+      // Get start of today and end of today
+      const today = new Date();
+      const startOfToday = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        today.getDate()
+      );
+      const endOfToday = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        today.getDate() + 1
+      );
+
+      console.log(
+        `[getTodayProgressStatistics] Calculating stats for ${userId} between ${startOfToday.toISOString()} and ${endOfToday.toISOString()}`
+      );
+
+      const [lessonsCompletedToday, quizAttemptsToday, studyTimeToday] =
+        await Promise.all([
+          // Lessons completed today
+          UserLessonProgress.countDocuments({
+            userId,
+            completed: true,
+            completedAt: {
+              $gte: startOfToday,
+              $lt: endOfToday,
+            },
+          }),
+          // Quiz attempts today
+          UserQuizAttempt.aggregate([
+            {
+              $match: {
+                userId,
+                completedAt: {
+                  $gte: startOfToday,
+                  $lt: endOfToday,
+                },
+              },
+            },
+            {
+              $group: {
+                _id: null,
+                totalQuestions: { $sum: "$totalQuestions" },
+                correctAnswers: { $sum: "$correctAnswers" },
+                totalTime: { $sum: "$timeSpent" },
+              },
+            },
+          ]),
+          // Study time today (from lesson progress)
+          UserLessonProgress.aggregate([
+            {
+              $match: {
+                userId,
+                lastAccessedAt: {
+                  $gte: startOfToday,
+                  $lt: endOfToday,
+                },
+              },
+            },
+            {
+              $group: {
+                _id: null,
+                totalTime: { $sum: "$timeSpent" },
+              },
+            },
+          ]),
+        ]);
+
+      // Process quiz data
+      const quizData = quizAttemptsToday[0] || {
+        totalQuestions: 0,
+        correctAnswers: 0,
+        totalTime: 0,
+      };
+      const studyTimeData = studyTimeToday[0] || { totalTime: 0 };
+
+      // Calculate accuracy
+      const accuracyToday =
+        quizData.totalQuestions > 0
+          ? Math.round(
+              (quizData.correctAnswers / quizData.totalQuestions) * 100
+            )
+          : 0;
+
+      const result = {
+        lessonsCompletedToday,
+        questionsAnsweredToday: quizData.totalQuestions,
+        accuracyToday,
+        studyTimeToday: Math.round(
+          studyTimeData.totalTime + quizData.totalTime
+        ), // Convert to minutes
+      };
+
+      console.log(`[getTodayProgressStatistics] Result for ${userId}:`, result);
+
+      return result;
+    } catch (error) {
+      console.error("Error getting today's progress statistics:", error);
+      throw new Error("Failed to get today's progress statistics");
     }
   }
 }

@@ -11,7 +11,6 @@ const syllabusSchema = new Schema<ISyllabusDocument>(
       type: String,
       required: true,
       ref: "Subject",
-      index: true,
     },
     title: {
       type: String,

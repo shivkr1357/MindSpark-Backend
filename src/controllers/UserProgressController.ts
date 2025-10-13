@@ -228,6 +228,76 @@ export class UserProgressController {
     }
   };
 
+  /**
+   * Get attempted question IDs for a user
+   */
+  public getAttemptedQuestionIds = async (
+    req: AuthenticatedRequest,
+    res: Response
+  ): Promise<void> => {
+    try {
+      const userId = req.user?.uid;
+
+      if (!userId) {
+        res.status(401).json({
+          success: false,
+          error: "User not authenticated",
+        });
+        return;
+      }
+
+      const attemptedIds = await this.progressService.getAttemptedQuestionIds(
+        userId
+      );
+
+      res.status(200).json({
+        success: true,
+        data: attemptedIds,
+      });
+    } catch (error) {
+      console.error("Get attempted question IDs error:", error);
+      res.status(500).json({
+        success: false,
+        error: "Failed to get attempted question IDs",
+      });
+    }
+  };
+
+  /**
+   * Get today's progress statistics
+   */
+  public getTodayProgressStatistics = async (
+    req: AuthenticatedRequest,
+    res: Response
+  ): Promise<void> => {
+    try {
+      const userId = req.user?.uid;
+
+      if (!userId) {
+        res.status(401).json({
+          success: false,
+          error: "User not authenticated",
+        });
+        return;
+      }
+
+      const todayStats = await this.progressService.getTodayProgressStatistics(
+        userId
+      );
+
+      res.status(200).json({
+        success: true,
+        data: todayStats,
+      });
+    } catch (error) {
+      console.error("Get today's progress statistics error:", error);
+      res.status(500).json({
+        success: false,
+        error: "Failed to get today's progress statistics",
+      });
+    }
+  };
+
   // ========================================
   // CODING ATTEMPTS
   // ========================================

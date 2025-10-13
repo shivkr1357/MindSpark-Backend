@@ -73,6 +73,20 @@ const interviewQuestionSchema = new Schema<IInterviewQuestionDocument>(
       required: true,
       ref: "User",
     },
+    featured: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+      index: true,
+    },
+    views: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,
@@ -92,6 +106,7 @@ interviewQuestionSchema.index({ createdAt: -1 });
 interviewQuestionSchema.index({ subjectId: 1, difficulty: 1 });
 interviewQuestionSchema.index({ subjectId: 1, categoryId: 1 });
 interviewQuestionSchema.index({ lessonId: 1, difficulty: 1 });
+interviewQuestionSchema.index({ featured: 1, isActive: 1, views: -1 });
 
 // Virtual for correct answer text
 interviewQuestionSchema.virtual("correctAnswerText").get(function () {
