@@ -27,6 +27,8 @@ export { UserAttemptedQuestion } from "./UserAttemptedQuestion.js";
 export { Reward } from "./Reward.js";
 export { UserReward } from "./UserReward.js";
 export { UserPoints } from "./UserPoints.js";
+export { RewardPointValues } from "./RewardPointValues.js";
+export { Questionnaire } from "./Questionnaire.js";
 
 export type { IUserDocument } from "./User.js";
 export type { ICategoryDocument } from "./Category.js";
@@ -57,3 +59,8 @@ export type { IUserAttemptedQuestion } from "./UserAttemptedQuestion.js";
 export type { IReward } from "./Reward.js";
 export type { IUserReward } from "./UserReward.js";
 export type { IUserPoints } from "./UserPoints.js";
+export type {
+  IQuestionnaire,
+  IQuestionnaireQuestion,
+  IQuestionnaireOption,
+} from "./Questionnaire.js";

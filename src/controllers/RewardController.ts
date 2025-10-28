@@ -238,4 +238,274 @@ export class RewardController {
       });
     }
   };
+
+  // ==================== ADMIN ENDPOINTS ====================
+
+  /**
+   * Get reward by ID (Admin)
+   */
+  public getRewardById = async (
+    req: AuthenticatedRequest,
+    res: Response
+  ): Promise<void> => {
+    try {
+      const { id } = req.params;
+      const reward = await this.rewardService.getRewardById(id);
+
+      if (!reward) {
+        res.status(404).json({
+          success: false,
+          error: "Reward not found",
+        });
+        return;
+      }
+
+      res.status(200).json({
+        success: true,
+        data: reward,
+      });
+    } catch (error) {
+      console.error("Get reward by ID error:", error);
+      res.status(500).json({
+        success: false,
+        error: "Failed to get reward",
+      });
+    }
+  };
+
+  /**
+   * Create reward (Admin)
+   */
+  public createReward = async (
+    req: AuthenticatedRequest,
+    res: Response
+  ): Promise<void> => {
+    try {
+      const reward = await this.rewardService.createReward(req.body);
+
+      res.status(201).json({
+        success: true,
+        data: reward,
+        message: "Reward created successfully",
+      });
+    } catch (error) {
+      console.error("Create reward error:", error);
+      res.status(500).json({
+        success: false,
+        error: "Failed to create reward",
+      });
+    }
+  };
+
+  /**
+   * Update reward (Admin)
+   */
+  public updateReward = async (
+    req: AuthenticatedRequest,
+    res: Response
+  ): Promise<void> => {
+    try {
+      const { id } = req.params;
+      const reward = await this.rewardService.updateReward(id, req.body);
+
+      if (!reward) {
+        res.status(404).json({
+          success: false,
+          error: "Reward not found",
+        });
+        return;
+      }
+
+      res.status(200).json({
+        success: true,
+        data: reward,
+        message: "Reward updated successfully",
+      });
+    } catch (error) {
+      console.error("Update reward error:", error);
+      res.status(500).json({
+        success: false,
+        error: "Failed to update reward",
+      });
+    }
+  };
+
+  /**
+   * Delete reward (Admin)
+   */
+  public deleteReward = async (
+    req: AuthenticatedRequest,
+    res: Response
+  ): Promise<void> => {
+    try {
+      const { id } = req.params;
+      await this.rewardService.deleteReward(id);
+
+      res.status(200).json({
+        success: true,
+        message: "Reward deleted successfully",
+      });
+    } catch (error) {
+      console.error("Delete reward error:", error);
+      res.status(500).json({
+        success: false,
+        error: "Failed to delete reward",
+      });
+    }
+  };
+
+  /**
+   * Get all user points (Admin)
+   */
+  public getAllUserPoints = async (
+    req: AuthenticatedRequest,
+    res: Response
+  ): Promise<void> => {
+    try {
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 50;
+      const tier = req.query.tier as string | undefined;
+
+      const { userPoints, total } = await this.rewardService.getAllUserPoints(
+        page,
+        limit,
+        tier
+      );
+
+      res.status(200).json({
+        success: true,
+        data: userPoints,
+        pagination: {
+          page,
+          limit,
+          total,
+          pages: Math.ceil(total / limit),
+        },
+      });
+    } catch (error) {
+      console.error("Get all user points error:", error);
+      res.status(500).json({
+        success: false,
+        error: "Failed to get user points",
+      });
+    }
+  };
+
+  /**
+   * Get user points by user ID (Admin)
+   */
+  public getUserPointsByUserId = async (
+    req: AuthenticatedRequest,
+    res: Response
+  ): Promise<void> => {
+    try {
+      const { userId } = req.params;
+      const userPoints = await this.rewardService.getUserPoints(userId);
+
+      if (!userPoints) {
+        res.status(404).json({
+          success: false,
+          error: "User points not found",
+        });
+        return;
+      }
+
+      res.status(200).json({
+        success: true,
+        data: userPoints,
+      });
+    } catch (error) {
+      console.error("Get user points by ID error:", error);
+      res.status(500).json({
+        success: false,
+        error: "Failed to get user points",
+      });
+    }
+  };
+
+  /**
+   * Get user rewards by user ID (Admin)
+   */
+  public getUserRewardsByUserId = async (
+    req: AuthenticatedRequest,
+    res: Response
+  ): Promise<void> => {
+    try {
+      const { userId } = req.params;
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 50;
+
+      const { rewards, total } = await this.rewardService.getUserRewards(
+        userId,
+        page,
+        limit
+      );
+
+      res.status(200).json({
+        success: true,
+        data: rewards,
+        pagination: {
+          page,
+          limit,
+          total,
+          pages: Math.ceil(total / limit),
+        },
+      });
+    } catch (error) {
+      console.error("Get user rewards by ID error:", error);
+      res.status(500).json({
+        success: false,
+        error: "Failed to get user rewards",
+      });
+    }
+  };
+
+  /**
+   * Get point values configuration (Admin)
+   */
+  public getPointValues = async (
+    req: AuthenticatedRequest,
+    res: Response
+  ): Promise<void> => {
+    try {
+      const pointValues = this.rewardService.getPointValues();
+
+      res.status(200).json({
+        success: true,
+        data: pointValues,
+      });
+    } catch (error) {
+      console.error("Get point values error:", error);
+      res.status(500).json({
+        success: false,
+        error: "Failed to get point values",
+      });
+    }
+  };
+
+  /**
+   * Update point values configuration (Admin)
+   */
+  public updatePointValues = async (
+    req: AuthenticatedRequest,
+    res: Response
+  ): Promise<void> => {
+    try {
+      const updatedValues = await this.rewardService.updatePointValues(
+        req.body
+      );
+
+      res.status(200).json({
+        success: true,
+        data: updatedValues,
+        message: "Point values updated successfully",
+      });
+    } catch (error) {
+      console.error("Update point values error:", error);
+      res.status(500).json({
+        success: false,
+        error: "Failed to update point values",
+      });
+    }
+  };
 }

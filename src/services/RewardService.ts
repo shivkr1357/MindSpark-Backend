@@ -8,12 +8,13 @@ import {
   UserPuzzleAttempt,
   UserCodingAttempt,
   UserSubjectEnrollment,
+  RewardPointValues,
 } from "../models/index.js";
 import type { IReward, IUserReward, IUserPoints } from "../models/index.js";
 
 export class RewardService {
-  // Point values for different activities (monetary rewards)
-  private readonly POINT_VALUES = {
+  // Default point values for different activities (monetary rewards)
+  private POINT_VALUES = {
     LESSON_COMPLETED: 1, // ₹1.00 per lesson
     QUIZ_QUESTION_CORRECT: 0.5, // ₹0.50 per correct answer
     QUIZ_QUESTION_WRONG: 0.1, // ₹0.10 participation
@@ -25,6 +26,35 @@ export class RewardService {
     SUBJECT_ENROLLED: 0.5, // ₹0.50 per enrollment
     ACHIEVEMENT_EARNED: 5, // ₹5.00 base for achievements
   };
+
+  constructor() {
+    this.loadPointValues();
+  }
+
+  /**
+   * Load point values from database
+   */
+  private async loadPointValues() {
+    try {
+      const config = await RewardPointValues.findOne().lean();
+      if (config) {
+        this.POINT_VALUES = {
+          LESSON_COMPLETED: config.LESSON_COMPLETED,
+          QUIZ_QUESTION_CORRECT: config.QUIZ_QUESTION_CORRECT,
+          QUIZ_QUESTION_WRONG: config.QUIZ_QUESTION_WRONG,
+          QUIZ_PERFECT_SCORE: config.QUIZ_PERFECT_SCORE,
+          PUZZLE_SOLVED: config.PUZZLE_SOLVED,
+          CODING_PROBLEM_SOLVED: config.CODING_PROBLEM_SOLVED,
+          CODING_PROBLEM_PERFECT: config.CODING_PROBLEM_PERFECT,
+          STREAK_DAY_BONUS: config.STREAK_DAY_BONUS,
+          SUBJECT_ENROLLED: config.SUBJECT_ENROLLED,
+          ACHIEVEMENT_EARNED: config.ACHIEVEMENT_EARNED,
+        };
+      }
+    } catch (error) {
+      console.error("Error loading point values:", error);
+    }
+  }
 
   /**
    * Award points for an activity
@@ -457,6 +487,131 @@ export class RewardService {
     } catch (error) {
       console.error("Error getting all rewards:", error);
       throw new Error("Failed to get rewards");
+    }
+  }
+
+  // ==================== ADMIN METHODS ====================
+
+  /**
+   * Get reward by ID
+   */
+  public async getRewardById(rewardId: string): Promise<IReward | null> {
+    try {
+      const reward = await Reward.findById(rewardId).lean();
+      return reward as unknown as IReward | null;
+    } catch (error) {
+      console.error("Error getting reward by ID:", error);
+      throw new Error("Failed to get reward");
+    }
+  }
+
+  /**
+   * Create a new reward
+   */
+  public async createReward(rewardData: Partial<IReward>): Promise<IReward> {
+    try {
+      const reward = new Reward(rewardData);
+      await reward.save();
+      return reward.toObject() as unknown as IReward;
+    } catch (error) {
+      console.error("Error creating reward:", error);
+      throw new Error("Failed to create reward");
+    }
+  }
+
+  /**
+   * Update a reward
+   */
+  public async updateReward(
+    rewardId: string,
+    updateData: Partial<IReward>
+  ): Promise<IReward | null> {
+    try {
+      const reward = await Reward.findByIdAndUpdate(rewardId, updateData, {
+        new: true,
+      }).lean();
+      return reward as unknown as IReward | null;
+    } catch (error) {
+      console.error("Error updating reward:", error);
+      throw new Error("Failed to update reward");
+    }
+  }
+
+  /**
+   * Delete a reward
+   */
+  public async deleteReward(rewardId: string): Promise<void> {
+    try {
+      await Reward.findByIdAndDelete(rewardId);
+    } catch (error) {
+      console.error("Error deleting reward:", error);
+      throw new Error("Failed to delete reward");
+    }
+  }
+
+  /**
+   * Get all user points (paginated)
+   */
+  public async getAllUserPoints(
+    page: number = 1,
+    limit: number = 50,
+    tier?: string
+  ): Promise<{ userPoints: IUserPoints[]; total: number }> {
+    try {
+      const query: any = {};
+      if (tier) query.tier = tier;
+
+      const skip = (page - 1) * limit;
+
+      const [userPoints, total] = await Promise.all([
+        UserPoints.find(query)
+          .sort({ totalPoints: -1 })
+          .skip(skip)
+          .limit(limit)
+          .lean(),
+        UserPoints.countDocuments(query),
+      ]);
+
+      return {
+        userPoints: userPoints as unknown as IUserPoints[],
+        total,
+      };
+    } catch (error) {
+      console.error("Error getting all user points:", error);
+      throw new Error("Failed to get user points");
+    }
+  }
+
+  /**
+   * Get current point values
+   */
+  public getPointValues() {
+    return { ...this.POINT_VALUES };
+  }
+
+  /**
+   * Update point values
+   */
+  public async updatePointValues(newValues: Partial<typeof this.POINT_VALUES>) {
+    try {
+      // Update or create configuration in database
+      let config = await RewardPointValues.findOne();
+
+      if (!config) {
+        config = new RewardPointValues(newValues);
+      } else {
+        Object.assign(config, newValues);
+      }
+
+      await config.save();
+
+      // Reload point values
+      await this.loadPointValues();
+
+      return this.POINT_VALUES;
+    } catch (error) {
+      console.error("Error updating point values:", error);
+      throw new Error("Failed to update point values");
     }
   }
 }

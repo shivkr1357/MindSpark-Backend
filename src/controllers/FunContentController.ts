@@ -138,6 +138,9 @@ export class FunContentController {
       const { id } = req.params;
       const updateData = req.body;
 
+      console.log("updateData", updateData);
+      console.log("id", id);
+
       const content = await this.funContentService.updateFunContent(
         id,
         updateData
